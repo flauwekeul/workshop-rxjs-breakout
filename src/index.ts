@@ -1,6 +1,7 @@
 import { animationFrameScheduler, combineLatest, interval, tap } from 'rxjs'
+import { renderBall } from './ball'
 import { createPaddle, renderPaddle } from './paddle'
-import { TICK_INTERVAL } from './settings'
+import { BALL_RADIUS, PADDLE_WIDTH, TICK_INTERVAL } from './settings'
 
 const canvas = document.createElement('canvas')
 const canvasContext = canvas.getContext('2d')
@@ -22,6 +23,8 @@ combineLatest({
       // clear previous renders
       canvasContext.clearRect(0, 0, canvas.width, canvas.height)
       renderPaddle(canvasContext, paddle)
+      // put ball on the paddle, in the center
+      renderBall(canvasContext, { x: paddle.x + PADDLE_WIDTH / 2, y: paddle.y - BALL_RADIUS })
     })
   )
   .subscribe()

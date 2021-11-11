@@ -8,3 +8,8 @@ export interface Rectangle extends Position {
   height: number
   color: string
 }
+
+export interface Circle extends Position {
+  radius: number
+  color: string
+}
