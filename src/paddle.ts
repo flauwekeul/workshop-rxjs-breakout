@@ -1,23 +1,20 @@
 import { fromEvent, map, Observable, startWith } from 'rxjs'
-import { PADDLE_BOTTOM_MARGIN, PADDLE_COLOR, PADDLE_HEIGHT, PADDLE_WIDTH } from './settings'
-import { Position } from './types'
+import { PADDLE_COLOR, PADDLE_HEIGHT, PADDLE_WIDTH } from './settings'
+import { Paddle, Position } from './types'
 import { clamp, drawRectangle } from './utils'
 
-const HALF_PADDLE_WIDTH = PADDLE_WIDTH / 2
-
-export const createPaddle = (canvas: HTMLCanvasElement): Observable<Position> => {
+export const createPaddle = (paddle: Paddle, canvas: HTMLCanvasElement): Observable<Paddle> => {
   // make sure the paddle doesn't go off screen
   const keepInCanvas = clamp(0, canvas.width - PADDLE_WIDTH)
-  const y = canvas.height - PADDLE_HEIGHT - PADDLE_BOTTOM_MARGIN
   return fromEvent<MouseEvent>(canvas, 'mousemove').pipe(
     // center paddle to mouse x position
-    map(({ clientX }) => ({ x: keepInCanvas(clientX - HALF_PADDLE_WIDTH), y })),
-    // start the peddle in the middle of the screen (else it only appears when the mouse moves)
-    startWith({ x: canvas.width / 2 - HALF_PADDLE_WIDTH, y })
+    map(({ clientX }) => ({ x: keepInCanvas(clientX - PADDLE_WIDTH / 2), y: paddle.y })),
+    // start the peddle in the middle of the screen (else it only appears once the mouse moves)
+    startWith(paddle)
   )
 }
 
-export const renderPaddle = (canvasContext: CanvasRenderingContext2D, { x, y }: Position) => {
+export const renderPaddle = (canvasContext: CanvasRenderingContext2D, { x, y }: Position): void => {
   drawRectangle(canvasContext, {
     x,
     y,

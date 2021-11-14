@@ -1,8 +1,11 @@
+import { Observable, of } from 'rxjs'
 import { BALL_COLOR, BALL_RADIUS } from './settings'
-import { Position } from './types'
+import { Ball, Position } from './types'
 import { drawCircle } from './utils'
 
-export const renderBall = (canvasContext: CanvasRenderingContext2D, { x, y }: Position) => {
+export const createBall = (ball: Ball): Observable<Ball> => of(ball)
+
+export const renderBall = (canvasContext: CanvasRenderingContext2D, { x, y }: Position): void => {
   drawCircle(canvasContext, {
     x,
     y,
