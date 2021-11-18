@@ -1,7 +1,8 @@
-import { combineLatest, tap } from 'rxjs'
-import { createBall, renderBall } from './ball'
-import { createPaddle, renderPaddle } from './paddle'
-import { BALL_RADIUS, PADDLE_BOTTOM_MARGIN, PADDLE_HEIGHT, PADDLE_WIDTH } from './settings'
+import { animationFrameScheduler, combineLatest, interval } from 'rxjs'
+import { sampleTime, tap } from 'rxjs/operators'
+import { createBall, renderBall, updateBall } from './ball'
+import { centerTopOfPaddle, createPaddle, renderPaddle } from './paddle'
+import { PADDLE_BOTTOM_MARGIN, PADDLE_HEIGHT, PADDLE_WIDTH, TICK_INTERVAL } from './settings'
 import { Ball, Paddle } from './types'
 
 const canvas = document.createElement('canvas')
@@ -18,34 +19,40 @@ const initialPaddle: Paddle = {
   y: canvas.height - PADDLE_HEIGHT - PADDLE_BOTTOM_MARGIN,
 }
 const initialBall: Ball = {
-  // actual position is set during rendering
-  x: 0,
-  y: 0,
-  direction: 0,
-  speed: 0,
+  ...centerTopOfPaddle(initialPaddle),
+  direction: 30,
+  speed: 5,
 }
 
-// const ticks$ = interval(TICK_INTERVAL, animationFrameScheduler)
+const ticks$ = interval(TICK_INTERVAL, animationFrameScheduler)
 const paddle$ = createPaddle(initialPaddle, canvas)
 const ball$ = createBall(initialBall)
 
-combineLatest([paddle$, ball$])
+const updateEntities = ({ paddle, ball }: Entities) => {
+  updateBall(ball, paddle)
+}
+
+const render = ({ paddle, ball }: Entities) => {
+  // clear previous renders
+  canvasContext.clearRect(0, 0, canvas.width, canvas.height)
+  // beginPath() is needed to clear any previously drawn paths
+  canvasContext.beginPath()
+
+  renderPaddle(canvasContext, paddle)
+  renderBall(canvasContext, ball)
+}
+
+combineLatest({ tick: ticks$, paddle: paddle$, ball: ball$ })
   .pipe(
-    tap(([paddle, ball]): void => {
-      // clear previous renders
-      canvasContext.clearRect(0, 0, canvas.width, canvas.height)
-      // beginPath() is needed to clear any previously drawn paths
-      canvasContext.beginPath()
-
-      renderPaddle(canvasContext, paddle)
-
-      if (ball.speed === 0) {
-        // put ball on the paddle, in the center
-        renderBall(canvasContext, {
-          x: paddle.x + PADDLE_WIDTH / 2,
-          y: paddle.y - BALL_RADIUS,
-        })
-      }
-    })
+    // make the stream emit only as fast as TICK_INTERVAL, this prevents mouse movements to make things move faster
+    sampleTime(TICK_INTERVAL, animationFrameScheduler),
+    tap(updateEntities),
+    tap(render)
   )
   .subscribe()
+
+interface Entities {
+  tick: number
+  paddle: Paddle
+  ball: Ball
+}

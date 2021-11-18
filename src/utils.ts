@@ -1,4 +1,4 @@
-import { Circle, Rectangle } from './types'
+import { Ball, Circle, Rectangle, Vector } from './types'
 
 // assumes x and y are both 0 at the top left corner
 export const drawRectangle = (
@@ -19,3 +19,11 @@ export const clamp =
   (min = 0, max = Infinity) =>
   (value: number) =>
     Math.max(min, Math.min(max, value))
+
+export const createVector = ({ direction, speed }: Pick<Ball, 'direction' | 'speed'>): Vector => {
+  const angle = ((direction - 90) / 180) * Math.PI
+  return {
+    deltaX: speed * Math.cos(angle),
+    deltaY: speed * Math.sin(angle),
+  }
+}

@@ -17,6 +17,11 @@ export interface Circle extends Position {
 export type Paddle = Position
 
 export interface Ball extends Position {
-  direction: number // radians
+  direction: number // degrees
   speed: number // px per tick
+}
+
+export interface Vector {
+  deltaX: number
+  deltaY: number
 }
