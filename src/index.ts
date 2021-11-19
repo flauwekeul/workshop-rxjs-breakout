@@ -20,8 +20,8 @@ const initialPaddle: Paddle = {
 }
 const initialBall: Ball = {
   ...centerTopOfPaddle(initialPaddle),
-  direction: 30,
-  speed: 5,
+  direction: -60,
+  speed: 8,
 }
 
 const ticks$ = interval(TICK_INTERVAL, animationFrameScheduler)
@@ -29,7 +29,7 @@ const paddle$ = createPaddle(initialPaddle, canvas)
 const ball$ = createBall(initialBall)
 
 const updateEntities = ({ paddle, ball }: Entities) => {
-  updateBall(ball, paddle)
+  updateBall(ball, paddle, canvas.width)
 }
 
 const render = ({ paddle, ball }: Entities) => {
