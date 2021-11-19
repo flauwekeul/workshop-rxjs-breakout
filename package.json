@@ -1,5 +1,5 @@
 {
-  "name": "rxjs-breakout",
+  "name": "workshop-rxjs-breakout",
   "version": "0.0.1",
   "description": "Workshop for creating a Breakout clone in the browser with RxJS",
   "main": "index.js",
