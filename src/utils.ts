@@ -1,4 +1,5 @@
-import { Ball, Circle, Rectangle, Vector } from './types'
+import { BALL_RADIUS, PADDLE_HEIGHT, PADDLE_WIDTH } from './settings'
+import { Ball, Circle, Position, Rectangle, Vector } from './types'
 
 // assumes x and y are both 0 at the top left corner
 export const drawRectangle = (
@@ -26,4 +27,21 @@ export const createVector = ({ direction, speed }: Pick<Ball, 'direction' | 'spe
     deltaX: speed * Math.cos(angle),
     deltaY: speed * Math.sin(angle),
   }
+}
+
+export const hasBallTouchedSide = ({ x }: Position, screenWidth: number) =>
+  x <= BALL_RADIUS || x >= screenWidth - BALL_RADIUS
+
+export const hasBallTouchedTop = ({ y }: Position) => y <= BALL_RADIUS
+
+export const hasBallTouchedPaddle = (ball: Position, paddle: Position) => {
+  const ballBottom = ball.y + BALL_RADIUS
+  return (
+    // don't use >= because that makes this function return true when the ball first launches resulting in a "wiggle"
+    ballBottom > paddle.y &&
+    // if the ball passed the paddle bottom, consider it lost
+    ballBottom < paddle.y + PADDLE_HEIGHT &&
+    ball.x >= paddle.x &&
+    ball.x <= paddle.x + PADDLE_WIDTH
+  )
 }
