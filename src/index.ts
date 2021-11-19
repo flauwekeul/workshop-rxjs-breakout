@@ -21,7 +21,7 @@ const initialPaddle: Paddle = {
 const initialBall: Ball = {
   ...centerTopOfPaddle(initialPaddle),
   direction: -60,
-  speed: 8,
+  speed: 12,
 }
 
 const ticks$ = interval(TICK_INTERVAL, animationFrameScheduler)
