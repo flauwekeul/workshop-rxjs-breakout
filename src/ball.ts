@@ -1,8 +1,18 @@
 import { of } from 'rxjs'
 import { centerTopOfPaddle } from './paddle'
-import { BALL_COLOR, BALL_RADIUS } from './settings'
+import {
+  BALL_COLOR,
+  BALL_RADIUS,
+  FAR_LEFT_BOUNCE_DIRECTION,
+  FAR_RIGHT_BOUNCE_DIRECTION,
+  PADDLE_WIDTH,
+} from './settings'
 import { Ball, Paddle, Position } from './types'
-import { createVector, drawCircle, hasBallTouchedPaddle, hasBallTouchedSide, hasBallTouchedTop } from './utils'
+import { createVector, drawCircle, hasBallTouchedPaddle, hasBallTouchedSide, hasBallTouchedTop, lerp } from './utils'
+
+// returns a function that accepts a normalized value (between 0 and 1) that returns a direction between
+// FAR_LEFT_BOUNCE_DIRECTION and FAR_RIGHT_BOUNCE_DIRECTION based on this normalized value
+const paddleBounce = lerp(FAR_LEFT_BOUNCE_DIRECTION, FAR_RIGHT_BOUNCE_DIRECTION)
 
 export const createBall = (ball: Ball) => of(ball)
 
@@ -14,11 +24,16 @@ export const updateBall = (ball: Ball, paddle: Paddle, screenWidth: number) => {
     return
   }
 
-  if (hasBallTouchedSide(ball, screenWidth)) {
-    ball.direction *= -1
-  }
-  if (hasBallTouchedTop(ball) || hasBallTouchedPaddle(ball, paddle)) {
-    ball.direction = ball.direction * -1 + 180
+  if (hasBallTouchedPaddle(ball, paddle)) {
+    const normalizedPaddleImpactPosition = (ball.x - paddle.x) / PADDLE_WIDTH
+    ball.direction = paddleBounce(normalizedPaddleImpactPosition)
+  } else {
+    if (hasBallTouchedSide(ball, screenWidth)) {
+      ball.direction *= -1
+    }
+    if (hasBallTouchedTop(ball)) {
+      ball.direction = ball.direction * -1 + 180
+    }
   }
 
   const { deltaX, deltaY } = createVector(ball)

@@ -21,6 +21,11 @@ export const clamp =
   (value: number) =>
     Math.max(min, Math.min(max, value))
 
+export const lerp =
+  (min = 0, max = 1) =>
+  (value: number) =>
+    min * (1 - value) + max * value
+
 export const createVector = ({ direction, speed }: Pick<Ball, 'direction' | 'speed'>): Vector => {
   const angle = ((direction - 90) / 180) * Math.PI
   return {

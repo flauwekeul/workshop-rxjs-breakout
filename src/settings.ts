@@ -9,3 +9,6 @@ export const PADDLE_WIDTH = 200
 
 export const BALL_RADIUS = 15
 export const BALL_COLOR = '#FAFAFA'
+
+export const FAR_LEFT_BOUNCE_DIRECTION = -85
+export const FAR_RIGHT_BOUNCE_DIRECTION = 85
