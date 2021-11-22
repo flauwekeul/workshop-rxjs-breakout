@@ -1,5 +1,4 @@
-import { animationFrameScheduler, combineLatest, interval } from 'rxjs'
-import { sampleTime, tap } from 'rxjs/operators'
+import { animationFrameScheduler, combineLatest, interval, sampleTime, tap } from 'rxjs'
 import { createBall, renderBall, updateBall } from './ball'
 import { centerTopOfPaddle, createPaddle, renderPaddle } from './paddle'
 import { PADDLE_BOTTOM_MARGIN, PADDLE_HEIGHT, PADDLE_WIDTH, TICK_INTERVAL } from './settings'
@@ -20,13 +19,13 @@ const initialPaddle: Paddle = {
 }
 const initialBall: Ball = {
   ...centerTopOfPaddle(initialPaddle),
-  direction: -60,
-  speed: 10,
+  direction: 30,
+  speed: 0,
 }
 
 const ticks$ = interval(TICK_INTERVAL, animationFrameScheduler)
 const paddle$ = createPaddle(initialPaddle, canvas)
-const ball$ = createBall(initialBall)
+const ball$ = createBall(initialBall, canvas)
 
 const updateEntities = ({ paddle, ball }: Entities) => {
   updateBall(ball, paddle, canvas.width)

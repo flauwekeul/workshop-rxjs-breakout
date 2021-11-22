@@ -1,5 +1,4 @@
-import { fromEvent, Observable } from 'rxjs'
-import { map, startWith } from 'rxjs/operators'
+import { fromEvent, map, Observable, startWith } from 'rxjs'
 import { BALL_RADIUS, PADDLE_COLOR, PADDLE_HEIGHT, PADDLE_WIDTH } from './settings'
 import { Paddle, Position } from './types'
 import { clamp, drawRectangle } from './utils'

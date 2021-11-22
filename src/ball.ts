@@ -1,7 +1,8 @@
-import { of } from 'rxjs'
+import { fromEvent, map, startWith, take } from 'rxjs'
 import { centerTopOfPaddle } from './paddle'
 import {
   BALL_COLOR,
+  BALL_INITIAL_SPEED,
   BALL_RADIUS,
   FAR_LEFT_BOUNCE_DIRECTION,
   FAR_RIGHT_BOUNCE_DIRECTION,
@@ -14,7 +15,12 @@ import { createVector, drawCircle, hasBallTouchedPaddle, hasBallTouchedSide, has
 // FAR_LEFT_BOUNCE_DIRECTION and FAR_RIGHT_BOUNCE_DIRECTION based on this normalized value
 const paddleBounce = lerp(FAR_LEFT_BOUNCE_DIRECTION, FAR_RIGHT_BOUNCE_DIRECTION)
 
-export const createBall = (ball: Ball) => of(ball)
+export const createBall = (ball: Ball, canvas: HTMLCanvasElement) =>
+  fromEvent<MouseEvent>(canvas, 'click').pipe(
+    take(1),
+    map(({ clientX }) => ({ ...ball, x: clientX, speed: BALL_INITIAL_SPEED })),
+    startWith(ball)
+  )
 
 export const updateBall = (ball: Ball, paddle: Paddle, screenWidth: number) => {
   if (ball.speed === 0) {
