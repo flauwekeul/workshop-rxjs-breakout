@@ -6,11 +6,19 @@ export interface Position {
 export interface Rectangle extends Position {
   width: number
   height: number
-  color: string
+}
+
+export interface RenderedRectangle extends Rectangle {
+  fill: string
+  strokeWidth?: number
+  strokeColor?: string
 }
 
 export interface Circle extends Position {
   radius: number
+}
+
+export interface RenderedCircle extends Circle {
   color: string
 }
 
@@ -25,3 +33,9 @@ export interface Vector {
   deltaX: number
   deltaY: number
 }
+
+export interface Brick extends Rectangle {
+  color: color
+}
+
+export type color = 'pink' | 'red' | 'orange' | 'yellow' | 'green' | 'blue'

@@ -1,8 +1,9 @@
 import { animationFrameScheduler, combineLatest, interval, sampleTime, tap } from 'rxjs'
 import { createBall, renderBall, updateBall } from './ball'
+import { createBricks, renderBricks } from './brick'
 import { centerTopOfPaddle, createPaddle, renderPaddle } from './paddle'
 import { PADDLE_BOTTOM_MARGIN, PADDLE_HEIGHT, PADDLE_WIDTH, TICK_INTERVAL } from './settings'
-import { Ball, Paddle } from './types'
+import { Ball, Brick, Paddle } from './types'
 
 const canvas = document.createElement('canvas')
 const canvasContext = canvas.getContext('2d')
@@ -26,22 +27,22 @@ const initialBall: Ball = {
 const ticks$ = interval(TICK_INTERVAL, animationFrameScheduler)
 const paddle$ = createPaddle(initialPaddle, canvas)
 const ball$ = createBall(initialBall, canvas)
+const bricks$ = createBricks(canvas)
 
 const updateEntities = ({ paddle, ball }: Entities) => {
   updateBall(ball, paddle, canvas.width)
 }
 
-const render = ({ paddle, ball }: Entities) => {
+const render = ({ paddle, ball, bricks }: Entities) => {
   // clear previous renders
   canvasContext.clearRect(0, 0, canvas.width, canvas.height)
-  // beginPath() is needed to clear any previously drawn paths
-  canvasContext.beginPath()
 
   renderPaddle(canvasContext, paddle)
   renderBall(canvasContext, ball)
+  renderBricks(canvasContext, bricks)
 }
 
-combineLatest({ tick: ticks$, paddle: paddle$, ball: ball$ })
+combineLatest({ tick: ticks$, paddle: paddle$, ball: ball$, bricks: bricks$ })
   .pipe(
     // make the stream emit only as fast as TICK_INTERVAL, this prevents mouse movements to make things move faster
     sampleTime(TICK_INTERVAL, animationFrameScheduler),
@@ -54,4 +55,5 @@ interface Entities {
   tick: number
   paddle: Paddle
   ball: Ball
+  bricks: Brick[]
 }

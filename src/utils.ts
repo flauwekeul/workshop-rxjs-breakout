@@ -1,16 +1,26 @@
 import { BALL_RADIUS, PADDLE_HEIGHT, PADDLE_WIDTH } from './settings'
-import { Ball, Circle, Position, Rectangle, Vector } from './types'
+import { Ball, Position, RenderedCircle, RenderedRectangle, Vector } from './types'
 
 // assumes x and y are both 0 at the top left corner
 export const drawRectangle = (
   canvasContext: CanvasRenderingContext2D,
-  { x, y, width, height, color }: Rectangle
+  { x, y, width, height, fill, strokeWidth = 0, strokeColor = '#000' }: RenderedRectangle
 ): void => {
-  canvasContext.fillStyle = color
-  canvasContext.fillRect(x, y, width, height)
+  // beginPath() is needed to clear any previously drawn paths
+  canvasContext.beginPath()
+  canvasContext.rect(x, y, width, height)
+  canvasContext.fillStyle = fill
+  canvasContext.fill()
+  if (strokeWidth) {
+    canvasContext.lineWidth = strokeWidth
+    canvasContext.strokeStyle = strokeColor
+    canvasContext.stroke()
+  }
 }
 
-export const drawCircle = (canvasContext: CanvasRenderingContext2D, { x, y, radius, color }: Circle): void => {
+export const drawCircle = (canvasContext: CanvasRenderingContext2D, { x, y, radius, color }: RenderedCircle): void => {
+  // beginPath() is needed to clear any previously drawn paths
+  canvasContext.beginPath()
   canvasContext.arc(x, y, radius, 0, 2 * Math.PI)
   canvasContext.fillStyle = color
   canvasContext.fill()

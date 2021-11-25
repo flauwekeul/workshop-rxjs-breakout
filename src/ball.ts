@@ -22,6 +22,7 @@ export const createBall = (ball: Ball, canvas: HTMLCanvasElement) =>
     startWith(ball)
   )
 
+// todo: maybe better to keep functions pure?
 export const updateBall = (ball: Ball, paddle: Paddle, screenWidth: number) => {
   if (ball.speed === 0) {
     const { x, y } = centerTopOfPaddle(paddle)

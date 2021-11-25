@@ -21,7 +21,7 @@ export const renderPaddle = (canvasContext: CanvasRenderingContext2D, { x, y }: 
     y,
     width: PADDLE_WIDTH,
     height: PADDLE_HEIGHT,
-    color: PADDLE_COLOR,
+    fill: PADDLE_COLOR,
   })
 }
 
