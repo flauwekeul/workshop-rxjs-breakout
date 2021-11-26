@@ -24,7 +24,7 @@ export interface RenderedCircle extends Circle {
 
 export type Paddle = Position
 
-export interface Ball extends Position {
+export interface Ball extends Circle {
   direction: number // degrees
   speed: number // px per tick
 }
@@ -39,3 +39,8 @@ export interface Brick extends Rectangle {
 }
 
 export type color = 'pink' | 'red' | 'orange' | 'yellow' | 'green' | 'blue'
+
+export interface BrickCollision {
+  index: number
+  hasCollidedVertically: boolean
+}

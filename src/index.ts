@@ -2,7 +2,7 @@ import { animationFrameScheduler, combineLatest, interval, sampleTime, tap } fro
 import { createBall, renderBall, updateBall } from './ball'
 import { createBricks, renderBricks } from './brick'
 import { centerTopOfPaddle, createPaddle, renderPaddle } from './paddle'
-import { PADDLE_BOTTOM_MARGIN, PADDLE_HEIGHT, PADDLE_WIDTH, TICK_INTERVAL } from './settings'
+import { BALL_RADIUS, PADDLE_BOTTOM_MARGIN, PADDLE_HEIGHT, PADDLE_WIDTH, TICK_INTERVAL } from './settings'
 import { Ball, Brick, Paddle } from './types'
 
 const canvas = document.createElement('canvas')
@@ -22,6 +22,7 @@ const initialBall: Ball = {
   ...centerTopOfPaddle(initialPaddle),
   direction: 30,
   speed: 0,
+  radius: BALL_RADIUS,
 }
 
 const ticks$ = interval(TICK_INTERVAL, animationFrameScheduler)
@@ -29,8 +30,8 @@ const paddle$ = createPaddle(initialPaddle, canvas)
 const ball$ = createBall(initialBall, canvas)
 const bricks$ = createBricks(canvas)
 
-const updateEntities = ({ paddle, ball }: Entities) => {
-  updateBall(ball, paddle, canvas.width)
+const updateEntities = ({ paddle, ball, bricks }: Entities) => {
+  updateBall(ball, paddle, canvas.width, bricks)
 }
 
 const render = ({ paddle, ball, bricks }: Entities) => {

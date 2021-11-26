@@ -12,9 +12,10 @@ export const PADDLE_WIDTH = 200
 export const BALL_RADIUS = 15
 export const BALL_COLOR = '#FAFAFA'
 export const BALL_INITIAL_SPEED = 8
+export const BALL_SPEED_INCREASE = 1.02
 
-export const FAR_LEFT_BOUNCE_DIRECTION = -85
-export const FAR_RIGHT_BOUNCE_DIRECTION = 85
+export const FAR_LEFT_BOUNCE_DIRECTION = -80
+export const FAR_RIGHT_BOUNCE_DIRECTION = 80
 
 export const BRICK_ROWS = 6
 export const BRICKS_PER_ROW = 15

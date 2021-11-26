@@ -1,5 +1,5 @@
 import { BALL_RADIUS, PADDLE_HEIGHT, PADDLE_WIDTH } from './settings'
-import { Ball, Position, RenderedCircle, RenderedRectangle, Vector } from './types'
+import { Ball, Brick, BrickCollision, Circle, Position, RenderedCircle, RenderedRectangle, Vector } from './types'
 
 // assumes x and y are both 0 at the top left corner
 export const drawRectangle = (
@@ -59,4 +59,30 @@ export const hasBallTouchedPaddle = (ball: Position, paddle: Position) => {
     ball.x >= paddle.x &&
     ball.x <= paddle.x + PADDLE_WIDTH
   )
+}
+
+export const getBrickCollision = (ball: Circle, bricks: Brick[]): BrickCollision => {
+  for (let index = 0; index < bricks.length; index++) {
+    const brick = bricks[index]
+    const halfBrickWidth = brick.width / 2
+    const halfBrickHeight = brick.height / 2
+    const distX = Math.abs(ball.x - brick.x - halfBrickWidth)
+    const distY = Math.abs(ball.y - brick.y - halfBrickHeight)
+
+    if (distX > halfBrickWidth + ball.radius || distY > halfBrickHeight + ball.radius) {
+      continue
+    }
+
+    if (distX <= halfBrickWidth || distY <= halfBrickHeight) {
+      return { index, hasCollidedVertically: distY < halfBrickHeight }
+    }
+
+    // calculate if the ball hits a brick on a corner
+    const dx = distX - brick.width / 2
+    const dy = distY - brick.height / 2
+    if (dx * dx + dy * dy <= ball.radius * ball.radius) {
+      // fixme: `dx > dy` doesn't really work
+      return { index, hasCollidedVertically: dx > dy }
+    }
+  }
 }
