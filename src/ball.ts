@@ -24,9 +24,10 @@ import {
 const paddleBounce = lerp(FAR_LEFT_BOUNCE_DIRECTION, FAR_RIGHT_BOUNCE_DIRECTION)
 
 export const createBall = (ball: Ball, canvas: HTMLCanvasElement) =>
-  fromEvent<MouseEvent>(canvas, 'click').pipe(
+  fromEvent(canvas, 'click').pipe(
     take(1),
-    map(({ clientX }) => ({ ...ball, x: clientX, speed: BALL_INITIAL_SPEED })),
+    // mapTo won't work, because the latest ball state is needed
+    map(() => ({ ...ball, speed: BALL_INITIAL_SPEED })),
     startWith(ball)
   )
 
@@ -39,7 +40,6 @@ export const updateBall = (ball: Ball, paddle: Paddle, screenWidth: number, bric
     return
   }
 
-  // fixme: fix bug where the ball hugs side of screen when mouse is clicked on side of screen
   // fixme: improve performance!
   // todo: think of something else for if/else horror
   const brickCollision = getBrickCollision(ball, bricks)
