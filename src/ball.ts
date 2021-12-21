@@ -3,7 +3,7 @@ import { BALL_COLOR, BALL_INITIAL_SPEED } from './settings'
 import { Ball, Circle } from './types'
 import { drawCircle } from './utils'
 
-export const createBall = (ball: Ball, canvas: HTMLCanvasElement) =>
+export const createBallStream = (ball: Ball, canvas: HTMLCanvasElement) =>
   fromEvent(canvas, 'click').pipe(
     take(1),
     // mapTo won't work, because the latest ball state is needed

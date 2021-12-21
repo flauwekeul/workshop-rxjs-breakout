@@ -1,10 +1,10 @@
-import { of } from 'rxjs'
+import { BehaviorSubject, Subject } from 'rxjs'
 import { BRICKS_MARGIN, BRICKS_PER_ROW, BRICK_COLOR_MAP, BRICK_ROWS, BRICK_STROKE_COLOR } from './settings'
 import { Brick } from './types'
 import { brickBuilder, drawRectangle } from './utils'
 
 // create bricks row for row, starting at the bottom
-export const createBricks = (canvas: HTMLCanvasElement) => {
+export const createBricksSubject = (canvas: HTMLCanvasElement): Subject<Brick[]> => {
   // twice BRICK_MARGIN for left and right
   const brickWidth = Math.floor((canvas.width - 2 * BRICKS_MARGIN) / BRICKS_PER_ROW)
   const createBrick = brickBuilder(brickWidth)
@@ -13,7 +13,7 @@ export const createBricks = (canvas: HTMLCanvasElement) => {
   const cols = Array.from({ length: BRICKS_PER_ROW })
   const bricks = rows.flatMap((_, row) => cols.map((_, col) => createBrick(col, row)))
 
-  return of(bricks)
+  return new BehaviorSubject(bricks)
 }
 
 export const renderBricks = (canvasContext: CanvasRenderingContext2D, bricks: Brick[]) => {

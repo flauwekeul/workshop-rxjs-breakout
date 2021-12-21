@@ -1,7 +1,7 @@
 import { animationFrameScheduler, combineLatest, interval, sampleTime, tap } from 'rxjs'
-import { createBall, renderBall } from './ball'
-import { createBricks, renderBricks } from './brick'
-import { centerTopOfPaddle, createPaddle, renderPaddle } from './paddle'
+import { createBallStream, renderBall } from './ball'
+import { createBricksSubject, renderBricks } from './brick'
+import { centerTopOfPaddle, createPaddleStream, renderPaddle } from './paddle'
 import {
   BALL_RADIUS,
   BALL_SPEED_INCREASE,
@@ -43,9 +43,9 @@ const initialBall: Ball = {
 }
 
 const ticks$ = interval(TICK_INTERVAL, animationFrameScheduler)
-const paddle$ = createPaddle(initialPaddle, canvas)
-const ball$ = createBall(initialBall, canvas)
-const bricks$ = createBricks(canvas)
+const paddle$ = createPaddleStream(initialPaddle, canvas)
+const ball$ = createBallStream(initialBall, canvas)
+const bricks$ = createBricksSubject(canvas)
 
 // returns a function that accepts a normalized value (between 0 and 1) that returns a direction between
 // FAR_LEFT_BOUNCE_DIRECTION and FAR_RIGHT_BOUNCE_DIRECTION based on this normalized value
@@ -60,14 +60,14 @@ const updateEntities = ({ paddle, ball, bricks }: Entities): Entities => {
   }
 
   // fixme: improve performance!
-  // todo: think of something else for if/else horror, probably something with Subjects
   const brickCollision = getBrickCollision(ball, bricks)
   if (brickCollision) {
     const { brickIndex, hasCollidedVertically } = brickCollision
     ball.direction = ball.direction * -1 + (hasCollidedVertically ? 0 : 180)
     // todo: show ball speed on screen?
     ball.speed *= BALL_SPEED_INCREASE
-    bricks.splice(brickIndex, 1)
+    const bricksWithoutCollidedBrick = bricks.filter((_, i) => i !== brickIndex)
+    bricks$.next(bricksWithoutCollidedBrick)
   } else if (hasBallTouchedPaddle(ball, paddle)) {
     const normalizedPaddleImpactPosition = (ball.x - paddle.x) / PADDLE_WIDTH
     ball.direction = paddleBounce(normalizedPaddleImpactPosition)

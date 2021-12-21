@@ -3,7 +3,7 @@ import { BALL_RADIUS, PADDLE_COLOR, PADDLE_HEIGHT, PADDLE_WIDTH } from './settin
 import { Paddle, Position } from './types'
 import { clamp, drawRectangle } from './utils'
 
-export const createPaddle = (paddle: Paddle, canvas: HTMLCanvasElement): Observable<Paddle> => {
+export const createPaddleStream = (paddle: Paddle, canvas: HTMLCanvasElement): Observable<Paddle> => {
   // make sure the paddle doesn't go off screen
   const keepInCanvas = clamp(0, canvas.width - PADDLE_WIDTH)
   // todo: move to updateEntities()?
