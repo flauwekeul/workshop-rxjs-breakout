@@ -29,11 +29,6 @@ export interface Ball extends Circle {
   speed: number // px per tick
 }
 
-export interface Vector {
-  deltaX: number
-  deltaY: number
-}
-
 export interface Brick extends Rectangle {
   color: color
 }

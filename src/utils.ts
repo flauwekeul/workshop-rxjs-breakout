@@ -7,7 +7,7 @@ import {
   PADDLE_HEIGHT,
   PADDLE_WIDTH,
 } from './settings'
-import { Ball, Brick, BrickCollision, Circle, Position, RenderedCircle, RenderedRectangle, Vector } from './types'
+import { Ball, Brick, BrickCollision, Circle, Position, RenderedCircle, RenderedRectangle } from './types'
 
 // assumes x and y are both 0 at the top left corner
 export const drawRectangle = (
@@ -44,11 +44,11 @@ export const lerp =
   (value: number) =>
     min * (1 - value) + max * value
 
-export const createVector = ({ direction, speed }: Pick<Ball, 'direction' | 'speed'>): Vector => {
+export const nextBallPosition = ({ x, y, direction, speed }: Ball): Position => {
   const angle = ((direction - 90) / 180) * Math.PI
   return {
-    deltaX: speed * Math.cos(angle),
-    deltaY: speed * Math.sin(angle),
+    x: x + speed * Math.cos(angle),
+    y: y + speed * Math.sin(angle),
   }
 }
 
