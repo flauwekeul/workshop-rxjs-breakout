@@ -1,31 +1,19 @@
 import { of } from 'rxjs'
-import {
-  BRICKS_MARGIN,
-  BRICKS_PER_ROW,
-  BRICK_COLOR_MAP,
-  BRICK_COLOR_PER_ROW,
-  BRICK_HEIGHT,
-  BRICK_ROWS,
-} from './settings'
+import { BRICKS_MARGIN, BRICKS_PER_ROW, BRICK_COLOR_MAP, BRICK_ROWS, BRICK_STROKE_COLOR } from './settings'
 import { Brick } from './types'
-import { drawRectangle } from './utils'
+import { brickBuilder, drawRectangle } from './utils'
 
 // create bricks row for row, starting at the bottom
 export const createBricks = (canvas: HTMLCanvasElement) => {
   // twice BRICK_MARGIN for left and right
   const brickWidth = Math.floor((canvas.width - 2 * BRICKS_MARGIN) / BRICKS_PER_ROW)
+  const createBrick = brickBuilder(brickWidth)
 
-  return of<Brick[]>(
-    Array.from({ length: BRICK_ROWS }).flatMap((_, row) =>
-      Array.from({ length: BRICKS_PER_ROW }).map((_, col) => ({
-        x: col * brickWidth + BRICKS_MARGIN,
-        y: (BRICK_ROWS - 1 - row) * BRICK_HEIGHT + BRICKS_MARGIN,
-        width: brickWidth,
-        height: BRICK_HEIGHT,
-        color: BRICK_COLOR_PER_ROW[row],
-      }))
-    )
-  )
+  const rows = Array.from({ length: BRICK_ROWS })
+  const cols = Array.from({ length: BRICKS_PER_ROW })
+  const bricks = rows.flatMap((_, row) => cols.map((_, col) => createBrick(col, row)))
+
+  return of(bricks)
 }
 
 export const renderBricks = (canvasContext: CanvasRenderingContext2D, bricks: Brick[]) => {
@@ -37,7 +25,7 @@ export const renderBricks = (canvasContext: CanvasRenderingContext2D, bricks: Br
       height,
       fill: BRICK_COLOR_MAP[color],
       strokeWidth: 3,
-      strokeColor: '#333',
+      strokeColor: BRICK_STROKE_COLOR,
     })
   })
 }

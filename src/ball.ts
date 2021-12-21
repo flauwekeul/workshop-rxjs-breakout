@@ -41,7 +41,7 @@ export const updateBall = (ball: Ball, paddle: Paddle, screenWidth: number, bric
   }
 
   // fixme: improve performance!
-  // todo: think of something else for if/else horror
+  // todo: think of something else for if/else horror, probably something with Subjects
   const brickCollision = getBrickCollision(ball, bricks)
   if (brickCollision) {
     const { index, hasCollidedVertically } = brickCollision

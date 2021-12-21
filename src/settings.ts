@@ -30,3 +30,4 @@ export const BRICK_COLOR_MAP: Record<color, string> = {
   red: '#EF4444',
   pink: '#EC4899',
 }
+export const BRICK_STROKE_COLOR = '#333'

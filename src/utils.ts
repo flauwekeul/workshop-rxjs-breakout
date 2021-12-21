@@ -1,4 +1,12 @@
-import { BALL_RADIUS, PADDLE_HEIGHT, PADDLE_WIDTH } from './settings'
+import {
+  BALL_RADIUS,
+  BRICKS_MARGIN,
+  BRICK_COLOR_PER_ROW,
+  BRICK_HEIGHT,
+  BRICK_ROWS,
+  PADDLE_HEIGHT,
+  PADDLE_WIDTH,
+} from './settings'
 import { Ball, Brick, BrickCollision, Circle, Position, RenderedCircle, RenderedRectangle, Vector } from './types'
 
 // assumes x and y are both 0 at the top left corner
@@ -86,3 +94,13 @@ export const getBrickCollision = (ball: Circle, bricks: Brick[]): BrickCollision
     }
   }
 }
+
+export const brickBuilder =
+  (brickWidth: number) =>
+  (col: number, row: number): Brick => ({
+    x: col * brickWidth + BRICKS_MARGIN,
+    y: (BRICK_ROWS - 1 - row) * BRICK_HEIGHT + BRICKS_MARGIN,
+    width: brickWidth,
+    height: BRICK_HEIGHT,
+    color: BRICK_COLOR_PER_ROW[row],
+  })
