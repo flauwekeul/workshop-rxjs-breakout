@@ -44,12 +44,12 @@ export const updateBall = (ball: Ball, paddle: Paddle, screenWidth: number, bric
   // todo: think of something else for if/else horror, probably something with Subjects
   const brickCollision = getBrickCollision(ball, bricks)
   if (brickCollision) {
-    const { index, hasCollidedVertically } = brickCollision
+    const { brickIndex, hasCollidedVertically } = brickCollision
     ball.direction = ball.direction * -1 + (hasCollidedVertically ? 0 : 180)
     // todo: show ball speed on screen?
     ball.speed *= BALL_SPEED_INCREASE
     // todo: use Subject instead of mutating bricks?
-    bricks.splice(index, 1)
+    bricks.splice(brickIndex, 1)
   } else if (hasBallTouchedPaddle(ball, paddle)) {
     const normalizedPaddleImpactPosition = (ball.x - paddle.x) / PADDLE_WIDTH
     ball.direction = paddleBounce(normalizedPaddleImpactPosition)

@@ -70,8 +70,8 @@ export const hasBallTouchedPaddle = (ball: Position, paddle: Position) => {
 }
 
 export const getBrickCollision = (ball: Circle, bricks: Brick[]): BrickCollision => {
-  for (let index = 0; index < bricks.length; index++) {
-    const brick = bricks[index]
+  for (let i = 0; i < bricks.length; i++) {
+    const brick = bricks[i]
     const halfBrickWidth = brick.width / 2
     const halfBrickHeight = brick.height / 2
     const distX = Math.abs(ball.x - brick.x - halfBrickWidth)
@@ -82,7 +82,7 @@ export const getBrickCollision = (ball: Circle, bricks: Brick[]): BrickCollision
     }
 
     if (distX <= halfBrickWidth || distY <= halfBrickHeight) {
-      return { index, hasCollidedVertically: distY < halfBrickHeight }
+      return { brickIndex: i, hasCollidedVertically: distY < halfBrickHeight }
     }
 
     // calculate if the ball hits a brick on a corner
@@ -90,7 +90,7 @@ export const getBrickCollision = (ball: Circle, bricks: Brick[]): BrickCollision
     const dy = distY - brick.height / 2
     if (dx * dx + dy * dy <= ball.radius * ball.radius) {
       // fixme: `dx > dy` doesn't really work
-      return { index, hasCollidedVertically: dx > dy }
+      return { brickIndex: i, hasCollidedVertically: dx > dy }
     }
   }
 }

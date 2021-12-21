@@ -41,6 +41,6 @@ export interface Brick extends Rectangle {
 export type color = 'pink' | 'red' | 'orange' | 'yellow' | 'green' | 'blue'
 
 export interface BrickCollision {
-  index: number
+  brickIndex: number
   hasCollidedVertically: boolean
 }
