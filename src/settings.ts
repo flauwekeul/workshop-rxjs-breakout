@@ -32,3 +32,4 @@ export const BRICK_COLOR_MAP: Record<color, string> = {
   pink: '#EC4899',
 }
 export const BRICK_STROKE_COLOR = '#333'
+export const BRICK_SCORE = 10

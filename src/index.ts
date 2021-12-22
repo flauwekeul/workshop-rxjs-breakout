@@ -3,10 +3,12 @@ import { createBallSubject, renderBall } from './ball'
 import { createBricksSubject, renderBricks } from './brick'
 import { createLivesSubject, renderLives } from './lives'
 import { centerTopOfPaddle, createPaddleStream, renderPaddle } from './paddle'
+import { createScoreSubject, renderScore } from './score'
 import {
   BALL_INITIAL_DIRECTION,
   BALL_RADIUS,
   BALL_SPEED_INCREASE,
+  BRICK_SCORE,
   FAR_LEFT_BOUNCE_DIRECTION,
   FAR_RIGHT_BOUNCE_DIRECTION,
   PADDLE_BOTTOM_MARGIN,
@@ -16,7 +18,7 @@ import {
 } from './settings'
 import { Ball, Brick, Paddle } from './types'
 import {
-  drawText,
+  drawGameOver,
   getBrickCollision,
   hasBallPassedPaddle,
   hasBallTouchedPaddle,
@@ -51,12 +53,13 @@ const paddle$ = createPaddleStream(initialPaddle, canvas)
 const ball$ = createBallSubject(initialBall, canvas)
 const bricks$ = createBricksSubject(canvas)
 const lives$ = createLivesSubject(3)
+const score$ = createScoreSubject(0)
 
 // returns a function that accepts a normalized value (between 0 and 1) that returns a direction between
 // FAR_LEFT_BOUNCE_DIRECTION and FAR_RIGHT_BOUNCE_DIRECTION based on this normalized value
 const paddleBounce = lerp(FAR_LEFT_BOUNCE_DIRECTION, FAR_RIGHT_BOUNCE_DIRECTION)
 
-const updateEntities = ({ paddle, ball, bricks, lives }: Entities): Entities => {
+const updateEntities = ({ paddle, ball, bricks, lives, score }: Entities): Entities => {
   if (ball.speed === 0) {
     const { x, y } = centerTopOfPaddle(paddle)
     ball.x = x
@@ -79,6 +82,7 @@ const updateEntities = ({ paddle, ball, bricks, lives }: Entities): Entities => 
     ball.speed *= BALL_SPEED_INCREASE
     const bricksWithoutCollidedBrick = bricks.filter((_, i) => i !== brickIndex)
     bricks$.next(bricksWithoutCollidedBrick)
+    score$.next(score + BRICK_SCORE)
   } else if (hasBallTouchedPaddle(ball, paddle)) {
     const normalizedPaddleImpactPosition = (ball.x - paddle.x) / PADDLE_WIDTH
     ball.direction = paddleBounce(normalizedPaddleImpactPosition)
@@ -93,7 +97,7 @@ const updateEntities = ({ paddle, ball, bricks, lives }: Entities): Entities => 
   ball.y = y
 }
 
-const render = ({ paddle, ball, bricks, lives }: Entities) => {
+const render = ({ paddle, ball, bricks, lives, score }: Entities) => {
   // clear previous renders
   canvasContext.clearRect(0, 0, canvas.width, canvas.height)
 
@@ -101,9 +105,10 @@ const render = ({ paddle, ball, bricks, lives }: Entities) => {
   renderBall(canvasContext, ball)
   renderBricks(canvasContext, bricks)
   renderLives(canvasContext, lives)
+  renderScore(canvasContext, score)
 }
 
-combineLatest({ tick: ticks$, paddle: paddle$, ball: ball$, bricks: bricks$, lives: lives$ })
+combineLatest({ tick: ticks$, paddle: paddle$, ball: ball$, bricks: bricks$, lives: lives$, score: score$ })
   .pipe(
     // make the stream emit only as fast as TICK_INTERVAL, this prevents mouse movements to make things move faster
     sampleTime(TICK_INTERVAL, animationFrameScheduler),
@@ -113,13 +118,7 @@ combineLatest({ tick: ticks$, paddle: paddle$, ball: ball$, bricks: bricks$, liv
   )
   .subscribe({
     complete: () => {
-      drawText(canvasContext, {
-        x: canvas.width / 2,
-        y: canvas.height / 2,
-        content: 'Game over!',
-        size: 100,
-        textAlign: 'center',
-      })
+      drawGameOver(canvasContext, score$.getValue())
     },
   })
 
@@ -129,4 +128,5 @@ interface Entities {
   ball: Ball
   bricks: Brick[]
   lives: number
+  score: number
 }

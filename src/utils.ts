@@ -47,6 +47,25 @@ export const drawText = (
   canvasContext.fillText(content, x, y)
 }
 
+export const drawGameOver = (canvasContext: CanvasRenderingContext2D, score: number) => {
+  const canvasMiddleX = canvasContext.canvas.width / 2
+  const canvasMiddleY = canvasContext.canvas.height / 2
+  drawText(canvasContext, {
+    x: canvasMiddleX,
+    y: canvasMiddleY,
+    content: 'Game over!',
+    size: 100,
+    textAlign: 'center',
+  })
+  drawText(canvasContext, {
+    x: canvasMiddleX,
+    y: canvasMiddleY + 100,
+    content: `Score: ${formatNumber(score)}`,
+    size: 60,
+    textAlign: 'center',
+  })
+}
+
 export const clamp =
   (min = 0, max = Infinity) =>
   (value: number) =>
@@ -119,3 +138,5 @@ export const brickBuilder =
     height: BRICK_HEIGHT,
     color: BRICK_COLOR_PER_ROW[row],
   })
+
+export const formatNumber = (score) => new Intl.NumberFormat('en-GB').format(score)
