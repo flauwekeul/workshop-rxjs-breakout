@@ -1,4 +1,4 @@
-import { animationFrameScheduler, combineLatest, interval, sampleTime, tap } from 'rxjs'
+import { animationFrameScheduler, combineLatest, interval, sampleTime, takeWhile, tap } from 'rxjs'
 import { createBallSubject, renderBall } from './ball'
 import { createBricksSubject, renderBricks } from './brick'
 import { createLivesSubject, renderLives } from './lives'
@@ -16,6 +16,7 @@ import {
 } from './settings'
 import { Ball, Brick, Paddle } from './types'
 import {
+  drawText,
   getBrickCollision,
   hasBallPassedPaddle,
   hasBallTouchedPaddle,
@@ -107,9 +108,20 @@ combineLatest({ tick: ticks$, paddle: paddle$, ball: ball$, bricks: bricks$, liv
     // make the stream emit only as fast as TICK_INTERVAL, this prevents mouse movements to make things move faster
     sampleTime(TICK_INTERVAL, animationFrameScheduler),
     tap(updateEntities),
-    tap(render)
+    tap(render),
+    takeWhile(({ lives }) => lives > 0)
   )
-  .subscribe()
+  .subscribe({
+    complete: () => {
+      drawText(canvasContext, {
+        x: canvas.width / 2,
+        y: canvas.height / 2,
+        content: 'Game over!',
+        size: 100,
+        textAlign: 'center',
+      })
+    },
+  })
 
 interface Entities {
   tick: number
