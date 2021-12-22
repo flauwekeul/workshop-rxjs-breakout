@@ -1,6 +1,7 @@
 import { animationFrameScheduler, combineLatest, interval, sampleTime, tap } from 'rxjs'
 import { createBallStream, renderBall } from './ball'
 import { createBricksSubject, renderBricks } from './brick'
+import { createLivesSubject, renderLives } from './lives'
 import { centerTopOfPaddle, createPaddleStream, renderPaddle } from './paddle'
 import {
   BALL_RADIUS,
@@ -46,6 +47,7 @@ const ticks$ = interval(TICK_INTERVAL, animationFrameScheduler)
 const paddle$ = createPaddleStream(initialPaddle, canvas)
 const ball$ = createBallStream(initialBall, canvas)
 const bricks$ = createBricksSubject(canvas)
+const lives$ = createLivesSubject(3)
 
 // returns a function that accepts a normalized value (between 0 and 1) that returns a direction between
 // FAR_LEFT_BOUNCE_DIRECTION and FAR_RIGHT_BOUNCE_DIRECTION based on this normalized value
@@ -82,16 +84,17 @@ const updateEntities = ({ paddle, ball, bricks }: Entities): Entities => {
   ball.y = y
 }
 
-const render = ({ paddle, ball, bricks }: Entities) => {
+const render = ({ paddle, ball, bricks, lives }: Entities) => {
   // clear previous renders
   canvasContext.clearRect(0, 0, canvas.width, canvas.height)
 
   renderPaddle(canvasContext, paddle)
   renderBall(canvasContext, ball)
   renderBricks(canvasContext, bricks)
+  renderLives(canvasContext, lives)
 }
 
-combineLatest({ tick: ticks$, paddle: paddle$, ball: ball$, bricks: bricks$ })
+combineLatest({ tick: ticks$, paddle: paddle$, ball: ball$, bricks: bricks$, lives: lives$ })
   .pipe(
     // make the stream emit only as fast as TICK_INTERVAL, this prevents mouse movements to make things move faster
     sampleTime(TICK_INTERVAL, animationFrameScheduler),
@@ -105,4 +108,5 @@ interface Entities {
   paddle: Paddle
   ball: Ball
   bricks: Brick[]
+  lives: number
 }

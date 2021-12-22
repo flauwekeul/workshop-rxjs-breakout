@@ -7,7 +7,9 @@ import {
   PADDLE_HEIGHT,
   PADDLE_WIDTH,
 } from './settings'
-import { Ball, Brick, BrickCollision, Circle, Position, RenderedCircle, RenderedRectangle } from './types'
+import { Ball, Brick, BrickCollision, Circle, Position, RenderedCircle, RenderedRectangle, Text } from './types'
+
+export type Optional<T, K extends keyof T> = Omit<T, K> & Partial<T>
 
 // assumes x and y are both 0 at the top left corner
 export const drawRectangle = (
@@ -32,6 +34,17 @@ export const drawCircle = (canvasContext: CanvasRenderingContext2D, { x, y, radi
   canvasContext.arc(x, y, radius, 0, 2 * Math.PI)
   canvasContext.fillStyle = color
   canvasContext.fill()
+}
+
+export const drawText = (
+  canvasContext: CanvasRenderingContext2D,
+  { x, y, content, color = '#fff', size = 20, textAlign = 'left' }: Optional<Text, 'color' | 'size' | 'textAlign'>
+): void => {
+  canvasContext.font = `${size}px Menlo, Monaco, "Lucida Console", monospace`
+  canvasContext.textAlign = textAlign
+  canvasContext.textBaseline = 'middle'
+  canvasContext.fillStyle = color
+  canvasContext.fillText(content, x, y)
 }
 
 export const clamp =

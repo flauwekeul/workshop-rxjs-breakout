@@ -39,3 +39,10 @@ export interface BrickCollision {
   brickIndex: number
   hasCollidedVertically: boolean
 }
+
+export interface Text extends Position {
+  content: string
+  color: string
+  size: number // px
+  textAlign: 'start' | 'end' | 'left' | 'right' | 'center'
+}
