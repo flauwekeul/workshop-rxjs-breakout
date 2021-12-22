@@ -61,11 +61,14 @@ const paddleBounce = lerp(FAR_LEFT_BOUNCE_DIRECTION, FAR_RIGHT_BOUNCE_DIRECTION)
 
 const updateEntities = ({ paddle, ball, bricks, lives, score }: Entities): Entities => {
   if (ball.speed === 0) {
+    canvas.classList.remove('hide-cursor')
     const { x, y } = centerTopOfPaddle(paddle)
     ball.x = x
     ball.y = y
     return
   }
+
+  canvas.classList.add('hide-cursor')
 
   if (hasBallPassedPaddle(ball.y, paddle)) {
     lives$.next(--lives)
