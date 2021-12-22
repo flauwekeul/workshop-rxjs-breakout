@@ -76,11 +76,13 @@ export const hasBallTouchedPaddle = (ball: Position, paddle: Position) => {
     // don't use >= because that makes this function return true when the ball first launches resulting in a "wiggle"
     ballBottom > paddle.y &&
     // if the ball passed the paddle bottom, consider it lost
-    ballBottom < paddle.y + PADDLE_HEIGHT &&
+    !hasBallPassedPaddle(ballBottom, paddle) &&
     ball.x >= paddle.x &&
     ball.x <= paddle.x + PADDLE_WIDTH
   )
 }
+
+export const hasBallPassedPaddle = (ballY: number, paddle: Position) => ballY > paddle.y + PADDLE_HEIGHT
 
 export const getBrickCollision = (ball: Circle, bricks: Brick[]): BrickCollision => {
   for (let i = 0; i < bricks.length; i++) {

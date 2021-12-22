@@ -1,9 +1,10 @@
 import { animationFrameScheduler, combineLatest, interval, sampleTime, tap } from 'rxjs'
-import { createBallStream, renderBall } from './ball'
+import { createBallSubject, renderBall } from './ball'
 import { createBricksSubject, renderBricks } from './brick'
 import { createLivesSubject, renderLives } from './lives'
 import { centerTopOfPaddle, createPaddleStream, renderPaddle } from './paddle'
 import {
+  BALL_INITIAL_DIRECTION,
   BALL_RADIUS,
   BALL_SPEED_INCREASE,
   FAR_LEFT_BOUNCE_DIRECTION,
@@ -16,6 +17,7 @@ import {
 import { Ball, Brick, Paddle } from './types'
 import {
   getBrickCollision,
+  hasBallPassedPaddle,
   hasBallTouchedPaddle,
   hasBallTouchedSide,
   hasBallTouchedTop,
@@ -38,14 +40,14 @@ const initialPaddle: Paddle = {
 }
 const initialBall: Ball = {
   ...centerTopOfPaddle(initialPaddle),
-  direction: 30,
+  direction: BALL_INITIAL_DIRECTION,
   speed: 0,
   radius: BALL_RADIUS,
 }
 
 const ticks$ = interval(TICK_INTERVAL, animationFrameScheduler)
 const paddle$ = createPaddleStream(initialPaddle, canvas)
-const ball$ = createBallStream(initialBall, canvas)
+const ball$ = createBallSubject(initialBall, canvas)
 const bricks$ = createBricksSubject(canvas)
 const lives$ = createLivesSubject(3)
 
@@ -53,7 +55,7 @@ const lives$ = createLivesSubject(3)
 // FAR_LEFT_BOUNCE_DIRECTION and FAR_RIGHT_BOUNCE_DIRECTION based on this normalized value
 const paddleBounce = lerp(FAR_LEFT_BOUNCE_DIRECTION, FAR_RIGHT_BOUNCE_DIRECTION)
 
-const updateEntities = ({ paddle, ball, bricks }: Entities): Entities => {
+const updateEntities = ({ paddle, ball, bricks, lives }: Entities): Entities => {
   if (ball.speed === 0) {
     const { x, y } = centerTopOfPaddle(paddle)
     ball.x = x
@@ -61,12 +63,18 @@ const updateEntities = ({ paddle, ball, bricks }: Entities): Entities => {
     return
   }
 
-  // fixme: improve performance!
+  if (hasBallPassedPaddle(ball.y, paddle)) {
+    lives$.next(--lives)
+    if (lives > 0) {
+      ball$.next(initialBall)
+    }
+    return
+  }
+
   const brickCollision = getBrickCollision(ball, bricks)
   if (brickCollision) {
     const { brickIndex, hasCollidedVertically } = brickCollision
     ball.direction = ball.direction * -1 + (hasCollidedVertically ? 0 : 180)
-    // todo: show ball speed on screen?
     ball.speed *= BALL_SPEED_INCREASE
     const bricksWithoutCollidedBrick = bricks.filter((_, i) => i !== brickIndex)
     bricks$.next(bricksWithoutCollidedBrick)
