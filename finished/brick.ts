@@ -1,7 +1,7 @@
 import { BehaviorSubject, Subject } from 'rxjs'
-import { BRICKS_MARGIN, BRICKS_PER_ROW, BRICK_COLOR_MAP, BRICK_ROWS, BRICK_STROKE_COLOR } from './settings'
-import { Brick } from './types'
-import { brickBuilder, drawRectangle } from './utils'
+import { BRICKS_MARGIN, BRICKS_PER_ROW, BRICK_COLOR_MAP, BRICK_ROWS, BRICK_STROKE_COLOR } from '../shared/settings'
+import { Brick } from '../shared/types'
+import { brickBuilder, drawRectangle } from '../shared/utils'
 
 // create bricks row for row, starting at the bottom
 export const createBricksSubject = (canvas: HTMLCanvasElement): Subject<Brick[]> => {

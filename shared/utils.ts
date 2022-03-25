@@ -6,7 +6,7 @@ import {
   BRICK_ROWS,
   PADDLE_HEIGHT,
   PADDLE_WIDTH,
-} from './settings'
+} from '../shared/settings'
 import { Ball, Brick, BrickCollision, Circle, Position, RenderedCircle, RenderedRectangle, Text } from './types'
 
 export type Optional<T, K extends keyof T> = Omit<T, K> & Partial<T>

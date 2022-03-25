@@ -1,5 +1,5 @@
 import { BehaviorSubject } from 'rxjs'
-import { drawText, formatNumber } from './utils'
+import { drawText, formatNumber } from '../shared/utils'
 
 export const createScoreSubject = (score: number) => new BehaviorSubject(score)
 

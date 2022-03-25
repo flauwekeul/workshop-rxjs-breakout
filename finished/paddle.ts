@@ -1,7 +1,7 @@
 import { fromEvent, map, Observable, startWith } from 'rxjs'
-import { BALL_RADIUS, PADDLE_COLOR, PADDLE_HEIGHT, PADDLE_WIDTH } from './settings'
-import { Paddle, Position } from './types'
-import { clamp, drawRectangle } from './utils'
+import { BALL_RADIUS, PADDLE_COLOR, PADDLE_HEIGHT, PADDLE_WIDTH } from '../shared/settings'
+import { Paddle, Position } from '../shared/types'
+import { clamp, drawRectangle } from '../shared/utils'
 
 export const createPaddleStream = (paddle: Paddle, canvas: HTMLCanvasElement): Observable<Paddle> => {
   // make sure the paddle doesn't go off screen

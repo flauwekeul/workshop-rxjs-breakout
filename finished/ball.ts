@@ -1,7 +1,7 @@
 import { BehaviorSubject, filter, fromEvent, map } from 'rxjs'
-import { BALL_COLOR, BALL_INITIAL_SPEED } from './settings'
-import { Ball, Circle } from './types'
-import { drawCircle } from './utils'
+import { BALL_COLOR, BALL_INITIAL_SPEED } from '../shared/settings'
+import { Ball, Circle } from '../shared/types'
+import { drawCircle } from '../shared/utils'
 
 export const createBallSubject = (initialBall: Ball, canvas: HTMLCanvasElement) => {
   const subject = new BehaviorSubject(initialBall)

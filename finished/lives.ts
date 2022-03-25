@@ -1,5 +1,5 @@
 import { BehaviorSubject } from 'rxjs'
-import { drawText } from './utils'
+import { drawText } from '../shared/utils'
 
 export const createLivesSubject = (lives: number) => new BehaviorSubject(lives)
 
