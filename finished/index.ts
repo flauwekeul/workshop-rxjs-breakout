@@ -13,6 +13,7 @@ import {
 } from '../shared/settings'
 import { Ball, Brick, Paddle } from '../shared/types'
 import {
+  createCanvas,
   drawGameOver,
   getBrickCollision,
   hasBallPassedPaddle,
@@ -23,18 +24,12 @@ import {
   nextBallPosition,
 } from '../shared/utils'
 import { createBallSubject, renderBall } from './ball'
-import { createBricksSubject, renderBricks } from './brick'
+import { createBricksSubject, renderBricks } from './bricks'
 import { createLivesSubject, renderLives } from './lives'
 import { centerTopOfPaddle, createPaddleStream, renderPaddle } from './paddle'
 import { createScoreSubject, renderScore } from './score'
 
-const canvas = document.createElement('canvas')
-const canvasContext = canvas.getContext('2d')
-
-document.body.appendChild(canvas)
-// set the canvas size in JS instead of CSS to prevent blurry renderings
-canvas.width = window.innerWidth
-canvas.height = window.innerHeight
+const { canvas, canvasContext } = createCanvas()
 
 const initialPaddle: Paddle = {
   // position it in the bottom center of the canvas

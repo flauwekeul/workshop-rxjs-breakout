@@ -7,9 +7,29 @@ import {
   PADDLE_HEIGHT,
   PADDLE_WIDTH,
 } from '../shared/settings'
-import { Ball, Brick, BrickCollision, Circle, Position, RenderedCircle, RenderedRectangle, Text } from './types'
+import {
+  Ball,
+  Brick,
+  BrickCollision,
+  Circle,
+  Optional,
+  Position,
+  RenderedCircle,
+  RenderedRectangle,
+  Text,
+} from './types'
 
-export type Optional<T, K extends keyof T> = Omit<T, K> & Partial<T>
+export const createCanvas = (container = document.body) => {
+  const canvas = document.createElement('canvas')
+  const canvasContext = canvas.getContext('2d')
+
+  container.appendChild(canvas)
+  // set the canvas size in JS instead of CSS to prevent blurry renderings
+  canvas.width = window.innerWidth
+  canvas.height = window.innerHeight
+
+  return { canvas, canvasContext }
+}
 
 // assumes x and y are both 0 at the top left corner
 export const drawRectangle = (
