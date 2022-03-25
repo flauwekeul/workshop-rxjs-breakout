@@ -13,6 +13,7 @@ import {
   BrickCollision,
   Circle,
   Optional,
+  Paddle,
   Position,
   RenderedCircle,
   RenderedRectangle,
@@ -160,3 +161,8 @@ export const brickBuilder =
   })
 
 export const formatNumber = (score) => new Intl.NumberFormat('en-GB').format(score)
+
+export const centerTopOfPaddle = (paddle: Paddle): Position => ({
+  x: paddle.x + PADDLE_WIDTH / 2,
+  y: paddle.y - BALL_RADIUS,
+})

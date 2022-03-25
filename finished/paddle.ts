@@ -1,5 +1,5 @@
 import { fromEvent, map, Observable, startWith } from 'rxjs'
-import { BALL_RADIUS, PADDLE_COLOR, PADDLE_HEIGHT, PADDLE_WIDTH } from '../shared/settings'
+import { PADDLE_COLOR, PADDLE_HEIGHT, PADDLE_WIDTH } from '../shared/settings'
 import { Paddle, Position } from '../shared/types'
 import { clamp, drawRectangle } from '../shared/utils'
 
@@ -24,8 +24,3 @@ export const renderPaddle = (canvasContext: CanvasRenderingContext2D, { x, y }: 
     fill: PADDLE_COLOR,
   })
 }
-
-export const centerTopOfPaddle = (paddle: Paddle): Position => ({
-  x: paddle.x + PADDLE_WIDTH / 2,
-  y: paddle.y - BALL_RADIUS,
-})

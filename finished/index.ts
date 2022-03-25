@@ -13,6 +13,7 @@ import {
 } from '../shared/settings'
 import { Ball, Entities, Paddle } from '../shared/types'
 import {
+  centerTopOfPaddle,
   createCanvas,
   drawGameOver,
   getBrickCollision,
@@ -26,7 +27,7 @@ import {
 import { createBallSubject, renderBall } from './ball'
 import { createBricksSubject, renderBricks } from './bricks'
 import { createLivesSubject, renderLives } from './lives'
-import { centerTopOfPaddle, createPaddleStream, renderPaddle } from './paddle'
+import { createPaddleStream, renderPaddle } from './paddle'
 import { createScoreSubject, renderScore } from './score'
 
 const { canvas, canvasContext } = createCanvas()
