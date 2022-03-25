@@ -11,7 +11,7 @@ import {
   PADDLE_WIDTH,
   TICK_INTERVAL,
 } from '../shared/settings'
-import { Ball, Brick, Paddle } from '../shared/types'
+import { Ball, Entities, Paddle } from '../shared/types'
 import {
   createCanvas,
   drawGameOver,
@@ -119,12 +119,3 @@ combineLatest({ tick: ticks$, paddle: paddle$, ball: ball$, bricks: bricks$, liv
       drawGameOver(canvasContext, score$.getValue())
     },
   })
-
-interface Entities {
-  tick: number
-  paddle: Paddle
-  ball: Ball
-  bricks: Brick[]
-  lives: number
-  score: number
-}

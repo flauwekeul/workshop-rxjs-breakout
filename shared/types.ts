@@ -48,3 +48,12 @@ export interface Text extends Position {
   size: number // px
   textAlign: 'start' | 'end' | 'left' | 'right' | 'center'
 }
+
+export interface Entities {
+  tick: number
+  paddle: Paddle
+  ball: Ball
+  bricks: Brick[]
+  lives: number
+  score: number
+}
