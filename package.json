@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "snowpack dev",
-    "build": "snowpack build"
+    "build": "snowpack build && slidev build --base /workshop-rxjs-breakout/slides/ --out build/slides",
+    "slides": "slidev"
   },
   "author": "Abbe Keultjes <flauwekeul@gmail.com> (https://abbekeultjes.nl/)",
   "license": "MIT",
@@ -14,6 +15,8 @@
     "typescript": "4.6.3"
   },
   "dependencies": {
+    "@slidev/cli": "0.32.3",
+    "@slidev/theme-default": "0.21.2",
     "rxjs": "7.5.5"
   }
 }

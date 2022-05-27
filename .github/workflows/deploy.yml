@@ -18,5 +18,6 @@ jobs:
         uses: crazy-max/ghaction-github-pages@v3
         with:
           build_dir: build
+          jekyll: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
