@@ -1,4 +1,5 @@
 import { combineLatest, of, tap } from 'rxjs'
+import { Entities } from '../shared/types'
 import { createCanvas } from '../shared/utils'
 import { createBallStream, renderBall } from './ball'
 import { createBricksStream, renderBricks } from './bricks'
@@ -15,9 +16,9 @@ const bricks$ = createBricksStream()
 const lives$ = createLivesSubject()
 const score$ = createScoreSubject()
 
-const updateEntities = () => {}
+const updateEntities = ({ paddle, ball, bricks, lives, score }: Entities): void => {}
 
-const render = () => {
+const render = ({ paddle, ball, bricks, lives, score }: Entities): void => {
   // clear previous renders
   canvasContext.clearRect(0, 0, canvas.width, canvas.height)
 

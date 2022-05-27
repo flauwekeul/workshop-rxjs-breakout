@@ -55,7 +55,7 @@ const score$ = createScoreSubject(0)
 // FAR_LEFT_BOUNCE_DIRECTION and FAR_RIGHT_BOUNCE_DIRECTION based on this normalized value
 const paddleBounce = lerp(FAR_LEFT_BOUNCE_DIRECTION, FAR_RIGHT_BOUNCE_DIRECTION)
 
-const updateEntities = ({ paddle, ball, bricks, lives, score }: Entities): Entities => {
+const updateEntities = ({ paddle, ball, bricks, lives, score }: Entities): void => {
   if (ball.speed === 0) {
     canvas.classList.remove('hide-cursor')
     const { x, y } = centerTopOfPaddle(paddle)
@@ -96,7 +96,7 @@ const updateEntities = ({ paddle, ball, bricks, lives, score }: Entities): Entit
   ball.y = y
 }
 
-const render = ({ paddle, ball, bricks, lives, score }: Entities) => {
+const render = ({ paddle, ball, bricks, lives, score }: Entities): void => {
   // clear previous renders
   canvasContext.clearRect(0, 0, canvas.width, canvas.height)
 
