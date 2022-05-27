@@ -8,4 +8,8 @@ module.exports = {
     shared: '/shared',
     finished: '/finished',
   },
+  buildOptions: {
+    // rename the default "_snowpack" metaUrlPath, else GitHub Pages ignores the folder
+    metaUrlPath: 'snowpack',
+  },
 }
