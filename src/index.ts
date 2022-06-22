@@ -1,13 +1,14 @@
-import { combineLatest, of, tap } from 'rxjs'
+import { animationFrameScheduler, combineLatest, interval, sampleTime, tap } from 'rxjs'
 import {
   BALL_INITIAL_DIRECTION,
   BALL_RADIUS,
   PADDLE_BOTTOM_MARGIN,
   PADDLE_HEIGHT,
   PADDLE_WIDTH,
+  TICK_INTERVAL,
 } from '../shared/settings'
 import { Ball, Paddle } from '../shared/types'
-import { centerTopOfPaddle, createCanvas } from '../shared/utils'
+import { centerTopOfPaddle, createCanvas, nextBallPosition } from '../shared/utils'
 import { createBallStream, renderBall } from './ball'
 import { createBricksStream } from './bricks'
 import { createLivesSubject } from './lives'
@@ -29,19 +30,28 @@ const initialBall: Ball = {
   radius: BALL_RADIUS,
 }
 
-const ticks$ = of()
+const ticks$ = interval(TICK_INTERVAL, animationFrameScheduler)
 const paddle$ = createPaddleStream(initialPaddle, canvas)
 const ball$ = createBallStream(initialBall, canvas)
 const bricks$ = createBricksStream(canvas)
 const lives$ = createLivesSubject(3)
 const score$ = createScoreSubject(0)
 
-combineLatest({ paddle: paddle$, ball: ball$ })
+combineLatest({ paddle: paddle$, ball: ball$, ticks: ticks$ })
   .pipe(
+    sampleTime(TICK_INTERVAL, animationFrameScheduler),
     tap(({ paddle, ball }) => {
-      const { x, y } = centerTopOfPaddle(paddle)
-      ball.x = x
-      ball.y = y
+      if (ball.speed > 0) {
+        const { x, y } = nextBallPosition(ball)
+        ball.x = x
+        ball.y = y
+        canvas.classList.add('hide-cursor')
+      } else {
+        const { x, y } = centerTopOfPaddle(paddle)
+        ball.x = x
+        ball.y = y
+        canvas.classList.remove('hide-cursor')
+      }
 
       canvasContext.clearRect(0, 0, canvas.width, canvas.height)
 
