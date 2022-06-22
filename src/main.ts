@@ -1,3 +1,4 @@
+import { tap } from 'rxjs'
 import { createBallStream } from './ball'
 import { createBricksStream } from './bricks'
 import {
@@ -10,7 +11,7 @@ import {
 import { Ball, GameState, Paddle } from './common/types'
 import { centerTopOfPaddle, createCanvas } from './common/utils'
 import { createLivesSubject } from './lives'
-import { createPaddleStream } from './paddle'
+import { createPaddleStream, renderPaddle } from './paddle'
 import { createScoreSubject } from './score'
 
 const { canvas, canvasContext } = createCanvas()
@@ -51,12 +52,19 @@ const updateState = (state: GameState): void => {}
  * This function is responsible for rendering (using each entity's render
  * function).
  */
-const renderState = (state: GameState): void => {}
+const renderState = ({ paddle }: GameState): void => {
+  // clear previous renders
+  canvasContext.clearRect(0, 0, canvas.width, canvas.height)
+
+  renderPaddle(canvasContext, paddle)
+}
 
 /**
  * This is the entrypoint of the game. It combines all entity streams into a
  * single stream and pipes it through the three functions above.
  */
-const main = (): void => {}
+const main = (): void => {
+  paddle$.pipe(tap((paddle) => renderState({ paddle } as GameState))).subscribe()
+}
 
 main()
