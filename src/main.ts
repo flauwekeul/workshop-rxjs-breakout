@@ -1,5 +1,5 @@
-import { tap } from 'rxjs'
-import { createBallStream } from './ball'
+import { combineLatest, map, tap } from 'rxjs'
+import { createBallStream, renderBall } from './ball'
 import { createBricksStream } from './bricks'
 import {
   BALL_INITIAL_DIRECTION,
@@ -9,7 +9,7 @@ import {
   PADDLE_WIDTH,
 } from './common/settings'
 import { Ball, GameState, Paddle } from './common/types'
-import { centerTopOfPaddle, createCanvas } from './common/utils'
+import { centerTopOfPaddle, createCanvas, createNextBall } from './common/utils'
 import { createLivesSubject } from './lives'
 import { createPaddleStream, renderPaddle } from './paddle'
 import { createScoreSubject } from './score'
@@ -41,7 +41,11 @@ const score$ = createScoreSubject(0)
 /**
  * This function is responsible for creating the next game state on every tick.
  */
-const nextState = (state: GameState): GameState => state
+const nextState = (state: GameState): GameState => {
+  const { paddle, ball } = state
+  const nextBall = createNextBall(ball, centerTopOfPaddle(paddle))
+  return { ...state, ball: nextBall }
+}
 
 /**
  * This function can be ignored until step 4.
@@ -52,11 +56,12 @@ const updateState = (state: GameState): void => {}
  * This function is responsible for rendering (using each entity's render
  * function).
  */
-const renderState = ({ paddle }: GameState): void => {
+const renderState = ({ paddle, ball }: GameState): void => {
   // clear previous renders
   canvasContext.clearRect(0, 0, canvas.width, canvas.height)
 
   renderPaddle(canvasContext, paddle)
+  renderBall(canvasContext, ball)
 }
 
 /**
@@ -64,7 +69,12 @@ const renderState = ({ paddle }: GameState): void => {
  * single stream and pipes it through the three functions above.
  */
 const main = (): void => {
-  paddle$.pipe(tap((paddle) => renderState({ paddle } as GameState))).subscribe()
+  combineLatest({ paddle: paddle$, ball: ball$ })
+    .pipe(
+      map((state) => nextState(state as GameState)),
+      tap(renderState)
+    )
+    .subscribe()
 }
 
 main()
