@@ -1,4 +1,4 @@
-import { of } from 'rxjs'
+import { of, tap } from 'rxjs'
 import {
   BALL_INITIAL_DIRECTION,
   BALL_RADIUS,
@@ -11,7 +11,7 @@ import { centerTopOfPaddle, createCanvas } from '../shared/utils'
 import { createBallStream } from './ball'
 import { createBricksStream } from './bricks'
 import { createLivesSubject } from './lives'
-import { createPaddleStream } from './paddle'
+import { createPaddleStream, renderPaddle } from './paddle'
 import { createScoreSubject } from './score'
 
 const { canvas, canvasContext } = createCanvas()
@@ -35,3 +35,12 @@ const ball$ = createBallStream(initialBall, canvas)
 const bricks$ = createBricksStream(canvas)
 const lives$ = createLivesSubject(3)
 const score$ = createScoreSubject(0)
+
+paddle$
+  .pipe(
+    tap((paddle) => {
+      canvasContext.clearRect(0, 0, canvas.width, canvas.height)
+      renderPaddle(canvasContext, paddle)
+    })
+  )
+  .subscribe()
