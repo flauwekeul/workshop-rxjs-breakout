@@ -22,7 +22,7 @@ import {
 
 export const createCanvas = (container = document.body) => {
   const canvas = document.createElement('canvas')
-  const canvasContext = canvas.getContext('2d')
+  const canvasContext = canvas.getContext('2d')!
 
   container.appendChild(canvas)
   // set the canvas size in JS instead of CSS to prevent blurry renderings
@@ -124,7 +124,7 @@ export const hasBallTouchedPaddle = (ball: Position, paddle: Position) => {
 
 export const hasBallPassedPaddle = (ballY: number, paddle: Position) => ballY > paddle.y + PADDLE_HEIGHT
 
-export const getBrickCollision = (ball: Circle, bricks: Brick[]): BrickCollision => {
+export const getBrickCollision = (ball: Circle, bricks: Brick[]): BrickCollision | undefined => {
   for (let i = 0; i < bricks.length; i++) {
     const brick = bricks[i]
     const halfBrickWidth = brick.width / 2

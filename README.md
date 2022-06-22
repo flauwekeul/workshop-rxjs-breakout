@@ -4,12 +4,11 @@ A workshop in vanilla TypeScript.
 
 ## Agenda
 
-* 9.00 - 9.30	Coffee ☕️ & 🤝 introduction
-* 9.30 - 10.20 🧑‍🏫 Theory: RxJS
-* 10.20 - 10.30	☕️ Break
-* 10.30 - 12.00	🧑‍💻 Assignments
+* 9.00 - 9.10 ☕️ Introduction
+* 9.10 - 10.30 🧑‍🏫 Theory and exercises
+* 10.30 - 12.00	🧑‍💻 Creating the game
 * 12.00 - 12.45	🥪 Lunch
-* 12.45 - 17.00	🧑‍💻 Assignments (with breaks)
+* 12.45 - ... 🧑‍💻 Creating the game (with breaks)
 
 ## Getting started
 
@@ -24,15 +23,22 @@ npm install
 3. Install dependencies
 4. Open your favorite editor
 
+## Theory and exercises
+
+Slides with theory are made using [slidev](https://sli.dev). Show the slides with `npm run slides`.
+
+After the slides, some exercises can be done by writing code in the `exercises` folder.
+To execute an exercise, run `npx ts-node exercises/01.ts` (replace `01.ts` with whatever file you want executed).
+
 ## Development
 
 This project uses [Snowpack](https://www.snowpack.dev/). Run `npm start` to start a dev server and `http://localhost:8080/` will be opened automatically. You can use types, settings and utils from the `shared` folder. Take care not to import from the `finished` folder as that would make this workshop too easy 😉.
 
-## Finished result
+## Finished game
 
 With the dev server running, go to [http://localhost:8080/finished/](http://localhost:8080/finished/) (**including the trailing slash** unfortunately) to see what you'll be making.
 
-## Exercises
+## Creating the game
 
 * 📜 RTFM: [RxJS API docs](https://rxjs.dev/api)
 * 🌳 [Operator decision tree](https://rxjs.dev/operator-decision-tree)
