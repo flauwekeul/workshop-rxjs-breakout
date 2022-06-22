@@ -1,4 +1,4 @@
-import { of, tap } from 'rxjs'
+import { combineLatest, of, tap } from 'rxjs'
 import {
   BALL_INITIAL_DIRECTION,
   BALL_RADIUS,
@@ -8,7 +8,7 @@ import {
 } from '../shared/settings'
 import { Ball, Paddle } from '../shared/types'
 import { centerTopOfPaddle, createCanvas } from '../shared/utils'
-import { createBallStream } from './ball'
+import { createBallStream, renderBall } from './ball'
 import { createBricksStream } from './bricks'
 import { createLivesSubject } from './lives'
 import { createPaddleStream, renderPaddle } from './paddle'
@@ -36,11 +36,17 @@ const bricks$ = createBricksStream(canvas)
 const lives$ = createLivesSubject(3)
 const score$ = createScoreSubject(0)
 
-paddle$
+combineLatest({ paddle: paddle$, ball: ball$ })
   .pipe(
-    tap((paddle) => {
+    tap(({ paddle, ball }) => {
+      const { x, y } = centerTopOfPaddle(paddle)
+      ball.x = x
+      ball.y = y
+
       canvasContext.clearRect(0, 0, canvas.width, canvas.height)
+
       renderPaddle(canvasContext, paddle)
+      renderBall(canvasContext, ball)
     })
   )
   .subscribe()
