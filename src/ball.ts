@@ -1,6 +1,6 @@
 import { Observable, of } from 'rxjs'
 import { Ball } from '../shared/types'
 
-export const createBallStream = (): Observable<Ball> => of()
+export const createBallStream = (initialBall: Ball, canvas: HTMLCanvasElement): Observable<Ball> => of()
 
-export const renderBall = (): void => {}
+export const renderBall = (canvasContext: CanvasRenderingContext2D, ball: Ball): void => {}

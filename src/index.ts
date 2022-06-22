@@ -1,34 +1,37 @@
-import { combineLatest, of, tap } from 'rxjs'
-import { Entities } from '../shared/types'
-import { createCanvas } from '../shared/utils'
-import { createBallStream, renderBall } from './ball'
-import { createBricksStream, renderBricks } from './bricks'
-import { createLivesSubject, renderLives } from './lives'
-import { createPaddleStream, renderPaddle } from './paddle'
-import { createScoreSubject, renderScore } from './score'
+import { of } from 'rxjs'
+import {
+  BALL_INITIAL_DIRECTION,
+  BALL_RADIUS,
+  PADDLE_BOTTOM_MARGIN,
+  PADDLE_HEIGHT,
+  PADDLE_WIDTH,
+} from '../shared/settings'
+import { Ball, Paddle } from '../shared/types'
+import { centerTopOfPaddle, createCanvas } from '../shared/utils'
+import { createBallStream } from './ball'
+import { createBricksStream } from './bricks'
+import { createLivesSubject } from './lives'
+import { createPaddleStream } from './paddle'
+import { createScoreSubject } from './score'
 
 const { canvas, canvasContext } = createCanvas()
 
-const ticks$ = of()
-const paddle$ = createPaddleStream()
-const ball$ = createBallStream()
-const bricks$ = createBricksStream()
-const lives$ = createLivesSubject()
-const score$ = createScoreSubject()
-
-const updateEntities = ({ paddle, ball, bricks, lives, score }: Entities): void => {}
-
-const render = ({ paddle, ball, bricks, lives, score }: Entities): void => {
-  // clear previous renders
-  canvasContext.clearRect(0, 0, canvas.width, canvas.height)
-
-  renderPaddle()
-  renderBall()
-  renderBricks()
-  renderLives()
-  renderScore()
+const initialPaddle: Paddle = {
+  // position it in the bottom center of the canvas
+  x: canvas.width / 2 - PADDLE_WIDTH / 2,
+  y: canvas.height - PADDLE_HEIGHT - PADDLE_BOTTOM_MARGIN,
 }
 
-combineLatest({ tick: ticks$, paddle: paddle$, ball: ball$, bricks: bricks$, lives: lives$, score: score$ })
-  .pipe(tap(updateEntities), tap(render))
-  .subscribe()
+const initialBall: Ball = {
+  ...centerTopOfPaddle(initialPaddle),
+  direction: BALL_INITIAL_DIRECTION,
+  speed: 0,
+  radius: BALL_RADIUS,
+}
+
+const ticks$ = of()
+const paddle$ = createPaddleStream(initialPaddle, canvas)
+const ball$ = createBallStream(initialBall, canvas)
+const bricks$ = createBricksStream(canvas)
+const lives$ = createLivesSubject(3)
+const score$ = createScoreSubject(0)

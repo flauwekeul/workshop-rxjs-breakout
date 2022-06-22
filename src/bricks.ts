@@ -1,6 +1,6 @@
 import { Observable, of } from 'rxjs'
 import { Brick } from '../shared/types'
 
-export const createBricksStream = (): Observable<Brick[]> => of()
+export const createBricksStream = (canvas: HTMLCanvasElement): Observable<Brick[]> => of()
 
-export const renderBricks = (): void => {}
+export const renderBricks = (canvasContext: CanvasRenderingContext2D, bricks: Brick[]): void => {}
