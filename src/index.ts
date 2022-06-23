@@ -2,6 +2,7 @@ import { animationFrameScheduler, combineLatest, interval, sampleTime, tap } fro
 import {
   BALL_INITIAL_DIRECTION,
   BALL_RADIUS,
+  BALL_SPEED_INCREASE,
   FAR_LEFT_BOUNCE_DIRECTION,
   FAR_RIGHT_BOUNCE_DIRECTION,
   PADDLE_BOTTOM_MARGIN,
@@ -13,6 +14,7 @@ import { Ball, Paddle } from '../shared/types'
 import {
   centerTopOfPaddle,
   createCanvas,
+  getBrickCollision,
   hasBallTouchedPaddle,
   hasBallTouchedSide,
   hasBallTouchedTop,
@@ -20,7 +22,7 @@ import {
   nextBallPosition,
 } from '../shared/utils'
 import { createBallStream, renderBall } from './ball'
-import { createBricksStream, renderBricks } from './bricks'
+import { createBricksSubject, renderBricks } from './bricks'
 import { createLivesSubject } from './lives'
 import { createPaddleStream, renderPaddle } from './paddle'
 import { createScoreSubject } from './score'
@@ -43,7 +45,7 @@ const initialBall: Ball = {
 const ticks$ = interval(TICK_INTERVAL, animationFrameScheduler)
 const paddle$ = createPaddleStream(initialPaddle, canvas)
 const ball$ = createBallStream(initialBall, canvas)
-const bricks$ = createBricksStream(canvas)
+const bricks$ = createBricksSubject(canvas)
 const lives$ = createLivesSubject(3)
 const score$ = createScoreSubject(0)
 
@@ -54,7 +56,7 @@ const paddleBounce = lerp(FAR_LEFT_BOUNCE_DIRECTION, FAR_RIGHT_BOUNCE_DIRECTION)
 combineLatest({ paddle: paddle$, ball: ball$, ticks: ticks$, bricks: bricks$ })
   .pipe(
     sampleTime(TICK_INTERVAL, animationFrameScheduler),
-    tap(({ paddle, ball }) => {
+    tap(({ paddle, ball, bricks }) => {
       if (ball.speed === 0) {
         const { x, y } = centerTopOfPaddle(paddle)
         ball.x = x
@@ -65,7 +67,14 @@ combineLatest({ paddle: paddle$, ball: ball$, ticks: ticks$, bricks: bricks$ })
 
       canvas.classList.add('hide-cursor')
 
-      if (hasBallTouchedPaddle(ball, paddle)) {
+      const brickCollision = getBrickCollision(ball, bricks)
+      if (brickCollision) {
+        const { brickIndex, hasCollidedVertically } = brickCollision
+        ball.direction = ball.direction * -1 + (hasCollidedVertically ? 0 : 180)
+        ball.speed *= BALL_SPEED_INCREASE
+        const bricksWithoutCollidedBrick = bricks.filter((_, i) => i !== brickIndex)
+        bricks$.next(bricksWithoutCollidedBrick)
+      } else if (hasBallTouchedPaddle(ball, paddle)) {
         const normalizedPaddleImpactPosition = (ball.x - paddle.x) / PADDLE_WIDTH
         ball.direction = paddleBounce(normalizedPaddleImpactPosition)
       } else if (hasBallTouchedSide(ball, canvas.width)) {
