@@ -1,6 +1,7 @@
 import {
   BALL_RADIUS,
   BRICKS_MARGIN,
+  BRICKS_PER_ROW,
   BRICK_COLOR_PER_ROW,
   BRICK_HEIGHT,
   BRICK_ROWS,
@@ -150,15 +151,17 @@ export const getBrickCollision = (ball: Circle, bricks: Brick[]): BrickCollision
   }
 }
 
-export const brickBuilder =
-  (brickWidth: number) =>
-  (col: number, row: number): Brick => ({
+export const brickBuilder = (canvas: HTMLCanvasElement) => {
+  // twice BRICK_MARGIN for left and right
+  const brickWidth = Math.floor((canvas.width - 2 * BRICKS_MARGIN) / BRICKS_PER_ROW)
+  return (col: number, row: number): Brick => ({
     x: col * brickWidth + BRICKS_MARGIN,
     y: (BRICK_ROWS - 1 - row) * BRICK_HEIGHT + BRICKS_MARGIN,
     width: brickWidth,
     height: BRICK_HEIGHT,
     color: BRICK_COLOR_PER_ROW[row],
   })
+}
 
 export const formatNumber = (score) => new Intl.NumberFormat('en-GB').format(score)
 
