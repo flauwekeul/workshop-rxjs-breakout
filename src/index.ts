@@ -2,13 +2,23 @@ import { animationFrameScheduler, combineLatest, interval, sampleTime, tap } fro
 import {
   BALL_INITIAL_DIRECTION,
   BALL_RADIUS,
+  FAR_LEFT_BOUNCE_DIRECTION,
+  FAR_RIGHT_BOUNCE_DIRECTION,
   PADDLE_BOTTOM_MARGIN,
   PADDLE_HEIGHT,
   PADDLE_WIDTH,
   TICK_INTERVAL,
 } from '../shared/settings'
 import { Ball, Paddle } from '../shared/types'
-import { centerTopOfPaddle, createCanvas, nextBallPosition } from '../shared/utils'
+import {
+  centerTopOfPaddle,
+  createCanvas,
+  hasBallTouchedPaddle,
+  hasBallTouchedSide,
+  hasBallTouchedTop,
+  lerp,
+  nextBallPosition,
+} from '../shared/utils'
 import { createBallStream, renderBall } from './ball'
 import { createBricksStream } from './bricks'
 import { createLivesSubject } from './lives'
@@ -37,22 +47,38 @@ const bricks$ = createBricksStream(canvas)
 const lives$ = createLivesSubject(3)
 const score$ = createScoreSubject(0)
 
+// returns a function that accepts a normalized value (between 0 and 1) that returns a direction between
+// FAR_LEFT_BOUNCE_DIRECTION and FAR_RIGHT_BOUNCE_DIRECTION based on this normalized value
+const paddleBounce = lerp(FAR_LEFT_BOUNCE_DIRECTION, FAR_RIGHT_BOUNCE_DIRECTION)
+
 combineLatest({ paddle: paddle$, ball: ball$, ticks: ticks$ })
   .pipe(
     sampleTime(TICK_INTERVAL, animationFrameScheduler),
     tap(({ paddle, ball }) => {
-      if (ball.speed > 0) {
-        const { x, y } = nextBallPosition(ball)
-        ball.x = x
-        ball.y = y
-        canvas.classList.add('hide-cursor')
-      } else {
+      if (ball.speed === 0) {
         const { x, y } = centerTopOfPaddle(paddle)
         ball.x = x
         ball.y = y
         canvas.classList.remove('hide-cursor')
+        return
       }
 
+      canvas.classList.add('hide-cursor')
+
+      if (hasBallTouchedPaddle(ball, paddle)) {
+        const normalizedPaddleImpactPosition = (ball.x - paddle.x) / PADDLE_WIDTH
+        ball.direction = paddleBounce(normalizedPaddleImpactPosition)
+      } else if (hasBallTouchedSide(ball, canvas.width)) {
+        ball.direction *= -1
+      } else if (hasBallTouchedTop(ball)) {
+        ball.direction = ball.direction * -1 + 180
+      }
+
+      const { x, y } = nextBallPosition(ball)
+      ball.x = x
+      ball.y = y
+    }),
+    tap(({ paddle, ball }) => {
       canvasContext.clearRect(0, 0, canvas.width, canvas.height)
 
       renderPaddle(canvasContext, paddle)
