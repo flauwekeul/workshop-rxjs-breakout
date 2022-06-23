@@ -20,7 +20,7 @@ import {
   nextBallPosition,
 } from '../shared/utils'
 import { createBallStream, renderBall } from './ball'
-import { createBricksStream } from './bricks'
+import { createBricksStream, renderBricks } from './bricks'
 import { createLivesSubject } from './lives'
 import { createPaddleStream, renderPaddle } from './paddle'
 import { createScoreSubject } from './score'
@@ -51,7 +51,7 @@ const score$ = createScoreSubject(0)
 // FAR_LEFT_BOUNCE_DIRECTION and FAR_RIGHT_BOUNCE_DIRECTION based on this normalized value
 const paddleBounce = lerp(FAR_LEFT_BOUNCE_DIRECTION, FAR_RIGHT_BOUNCE_DIRECTION)
 
-combineLatest({ paddle: paddle$, ball: ball$, ticks: ticks$ })
+combineLatest({ paddle: paddle$, ball: ball$, ticks: ticks$, bricks: bricks$ })
   .pipe(
     sampleTime(TICK_INTERVAL, animationFrameScheduler),
     tap(({ paddle, ball }) => {
@@ -78,11 +78,12 @@ combineLatest({ paddle: paddle$, ball: ball$, ticks: ticks$ })
       ball.x = x
       ball.y = y
     }),
-    tap(({ paddle, ball }) => {
+    tap(({ paddle, ball, bricks }) => {
       canvasContext.clearRect(0, 0, canvas.width, canvas.height)
 
       renderPaddle(canvasContext, paddle)
       renderBall(canvasContext, ball)
+      renderBricks(canvasContext, bricks)
     })
   )
   .subscribe()
