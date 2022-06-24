@@ -2,6 +2,9 @@
 highlighter: shiki
 lineNumbers: true
 layout: cover
+title: RxJS fundamentals
+titleTemplate: '%s'
+favicon: https://rxjs.dev/assets/images/favicons/favicon.ico
 ---
 
 <div class="text-center">
@@ -91,9 +94,9 @@ layout: cover
   <div v-click>
 
   ```js
-  import { of, map, filter, reduce } from 'rxjs'
+  import { from, map, filter, reduce } from 'rxjs'
 
-  of(1, 2, 3)
+  from([1, 2, 3])
     .pipe(
       map((n) => n * 2),
       filter((n) => n < 5),
@@ -174,6 +177,53 @@ zip(clicks$, seconds$).subscribe(([lastClick, lastSecond]) => {
 clicks$
   .pipe(withLatestFrom(seconds$))
   .subscribe(([lastClick, lastSecond]) => {
-    console.log(lastClick, lastSecond) // latest click and second for each click
+    console.log(lastClick, lastSecond) // latest click and latest second for each click
   })
 ```
+
+---
+
+<h1 class="!mb-13">Subjects</h1>
+
+<div class="grid grid-cols-2 gap-2 mb-8">
+  <div v-click>
+  Both an observable…
+
+  ```js
+  import { Subject } from 'rxjs'
+
+  const subject = new Subject()
+  subject.subscribe()
+
+  ```
+
+  </div>
+  <div v-click>
+  …and an observer.
+
+  ```js
+  import { Subject } from 'rxjs'
+
+  const subject = new Subject()
+  subject.next()
+  subject.complete()
+  ```
+
+  </div>
+</div>
+
+<div v-click>
+
+  ```js
+  import { BehaviorSubject } from 'rxjs'
+
+  // Represents a "current value"
+  const subject = new BehaviorSubject(0)
+  subject.subscribe(n => console.log(`A: ${n}`))  // A: 0
+  subject.next(1)                                 // A: 1
+  subject.subscribe(n => console.log(`B: ${n}`))  // B: 1
+  subject.next(2)                                 // A: 2
+                                                  // B: 2
+  ```
+
+</div>
