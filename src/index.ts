@@ -1,4 +1,4 @@
-import { animationFrameScheduler, combineLatest, interval, sampleTime, tap } from 'rxjs'
+import { animationFrameScheduler, combineLatest, interval, sampleTime, takeWhile, tap } from 'rxjs'
 import {
   BALL_INITIAL_DIRECTION,
   BALL_RADIUS,
@@ -15,6 +15,7 @@ import { Ball, Paddle } from '../shared/types'
 import {
   centerTopOfPaddle,
   createCanvas,
+  drawGameOver,
   getBrickCollision,
   hasBallPassedPaddle,
   hasBallTouchedPaddle,
@@ -25,7 +26,7 @@ import {
 } from '../shared/utils'
 import { createBallSubject, renderBall } from './ball'
 import { createBricksSubject, renderBricks } from './bricks'
-import { createLivesSubject } from './lives'
+import { createLivesSubject, renderLives } from './lives'
 import { createPaddleStream, renderPaddle } from './paddle'
 import { createScoreSubject, renderScore } from './score'
 
@@ -55,10 +56,10 @@ const score$ = createScoreSubject(0)
 // FAR_LEFT_BOUNCE_DIRECTION and FAR_RIGHT_BOUNCE_DIRECTION based on this normalized value
 const paddleBounce = lerp(FAR_LEFT_BOUNCE_DIRECTION, FAR_RIGHT_BOUNCE_DIRECTION)
 
-combineLatest({ paddle: paddle$, ball: ball$, ticks: ticks$, bricks: bricks$, score: score$ })
+combineLatest({ paddle: paddle$, ball: ball$, ticks: ticks$, bricks: bricks$, score: score$, lives: lives$ })
   .pipe(
     sampleTime(TICK_INTERVAL, animationFrameScheduler),
-    tap(({ paddle, ball, bricks, score }) => {
+    tap(({ paddle, ball, bricks, score, lives }) => {
       if (ball.speed === 0) {
         const { x, y } = centerTopOfPaddle(paddle)
         ball.x = x
@@ -70,7 +71,10 @@ combineLatest({ paddle: paddle$, ball: ball$, ticks: ticks$, bricks: bricks$, sc
       canvas.classList.add('hide-cursor')
 
       if (hasBallPassedPaddle(ball.y, paddle)) {
-        ball$.next(initialBall)
+        lives$.next(lives - 1)
+        if (lives > 0) {
+          ball$.next(initialBall)
+        }
         return
       }
 
@@ -95,13 +99,19 @@ combineLatest({ paddle: paddle$, ball: ball$, ticks: ticks$, bricks: bricks$, sc
       ball.x = x
       ball.y = y
     }),
-    tap(({ paddle, ball, bricks, score }) => {
+    tap(({ paddle, ball, bricks, score, lives }) => {
       canvasContext.clearRect(0, 0, canvas.width, canvas.height)
 
       renderPaddle(canvasContext, paddle)
       renderBall(canvasContext, ball)
       renderBricks(canvasContext, bricks)
       renderScore(canvasContext, score)
-    })
+      renderLives(canvasContext, lives)
+    }),
+    takeWhile(({ lives }) => lives > 0)
   )
-  .subscribe()
+  .subscribe({
+    complete: () => {
+      drawGameOver(canvasContext, score$.getValue())
+    },
+  })
