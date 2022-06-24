@@ -1,0 +1,10 @@
+html,
+body {
+  background-color: black;
+  margin: 0;
+  height: 100%;
+}
+
+.hide-cursor {
+  cursor: none;
+}
