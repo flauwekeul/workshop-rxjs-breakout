@@ -3,6 +3,7 @@ import {
   BALL_INITIAL_DIRECTION,
   BALL_RADIUS,
   BALL_SPEED_INCREASE,
+  BRICK_SCORE,
   FAR_LEFT_BOUNCE_DIRECTION,
   FAR_RIGHT_BOUNCE_DIRECTION,
   PADDLE_BOTTOM_MARGIN,
@@ -26,7 +27,7 @@ import { createBallSubject, renderBall } from './ball'
 import { createBricksSubject, renderBricks } from './bricks'
 import { createLivesSubject } from './lives'
 import { createPaddleStream, renderPaddle } from './paddle'
-import { createScoreSubject } from './score'
+import { createScoreSubject, renderScore } from './score'
 
 const { canvas, canvasContext } = createCanvas()
 
@@ -54,10 +55,10 @@ const score$ = createScoreSubject(0)
 // FAR_LEFT_BOUNCE_DIRECTION and FAR_RIGHT_BOUNCE_DIRECTION based on this normalized value
 const paddleBounce = lerp(FAR_LEFT_BOUNCE_DIRECTION, FAR_RIGHT_BOUNCE_DIRECTION)
 
-combineLatest({ paddle: paddle$, ball: ball$, ticks: ticks$, bricks: bricks$ })
+combineLatest({ paddle: paddle$, ball: ball$, ticks: ticks$, bricks: bricks$, score: score$ })
   .pipe(
     sampleTime(TICK_INTERVAL, animationFrameScheduler),
-    tap(({ paddle, ball, bricks }) => {
+    tap(({ paddle, ball, bricks, score }) => {
       if (ball.speed === 0) {
         const { x, y } = centerTopOfPaddle(paddle)
         ball.x = x
@@ -80,6 +81,7 @@ combineLatest({ paddle: paddle$, ball: ball$, ticks: ticks$, bricks: bricks$ })
         ball.speed *= BALL_SPEED_INCREASE
         const bricksWithoutCollidedBrick = bricks.filter((_, i) => i !== brickIndex)
         bricks$.next(bricksWithoutCollidedBrick)
+        score$.next(score + BRICK_SCORE)
       } else if (hasBallTouchedPaddle(ball, paddle)) {
         const normalizedPaddleImpactPosition = (ball.x - paddle.x) / PADDLE_WIDTH
         ball.direction = paddleBounce(normalizedPaddleImpactPosition)
@@ -93,12 +95,13 @@ combineLatest({ paddle: paddle$, ball: ball$, ticks: ticks$, bricks: bricks$ })
       ball.x = x
       ball.y = y
     }),
-    tap(({ paddle, ball, bricks }) => {
+    tap(({ paddle, ball, bricks, score }) => {
       canvasContext.clearRect(0, 0, canvas.width, canvas.height)
 
       renderPaddle(canvasContext, paddle)
       renderBall(canvasContext, ball)
       renderBricks(canvasContext, bricks)
+      renderScore(canvasContext, score)
     })
   )
   .subscribe()
