@@ -1,4 +1,4 @@
-# Create a game ([Breakout!](https://en.wikipedia.org/wiki/Breakout_(video_game))) with RxJS
+# Create [Breakout!](https://abbekeultjes.nl/workshop-rxjs-breakout/finished/) with [RxJS](https://rxjs.dev)
 
 A workshop in vanilla TypeScript.
 
@@ -13,7 +13,6 @@ npm install
 1. Clone the project from GitHub: https://github.com/flauwekeul/workshop-rxjs-breakout
 2. `cd` into the folder
 3. Install dependencies
-4. Open your favorite editor
 
 ## Development
 
@@ -21,14 +20,13 @@ This project uses [Snowpack](https://www.snowpack.dev/). Run `npm start` to star
 
 ## Theory and exercises
 
-Slides with theory are made using [slidev](https://sli.dev). Show the slides with `npm run slides`.
+Slides with theory are made using [slidev](https://sli.dev). Show the slides with `npm run slides` or see them [online](https://abbekeultjes.nl/workshop-rxjs-breakout/slides).
 
-After the slides, some exercises can be done by writing code in the `exercises` folder.
-To execute an exercise, run `npx ts-node exercises/01.ts` (replace `01.ts` with whatever file you want executed).
+After the slides, some exercises can be done by writing code in the `exercises` folder. To execute an exercise, run `npx ts-node exercises/01.ts` (replace `01.ts` with whatever file you want executed). A message shows whether you wrote the expected code.
 
 ## Finished game
 
-With the dev server running, go to [http://localhost:8080/finished/](http://localhost:8080/finished/) (**including the trailing slash** unfortunately) to see what you'll be making.
+With the dev server running, go to [http://localhost:8080/finished/](http://localhost:8080/finished/) (**including the trailing slash** unfortunately) to see what you'll be making. Or see it [online](https://abbekeultjes.nl/workshop-rxjs-breakout/finished/).
 
 ## Resources
 
@@ -37,7 +35,7 @@ With the dev server running, go to [http://localhost:8080/finished/](http://loca
 
 ## Creating the game
 
-9 steps in (more or less) increasing difficulty:
+9 steps in (more or less) increasing difficulty.
 
 ### Step 1: Render a paddle that "follows" the mouse
 
