@@ -15,13 +15,14 @@ import {
   centerTopOfPaddle,
   createCanvas,
   getBrickCollision,
+  hasBallPassedPaddle,
   hasBallTouchedPaddle,
   hasBallTouchedSide,
   hasBallTouchedTop,
   lerp,
   nextBallPosition,
 } from '../shared/utils'
-import { createBallStream, renderBall } from './ball'
+import { createBallSubject, renderBall } from './ball'
 import { createBricksSubject, renderBricks } from './bricks'
 import { createLivesSubject } from './lives'
 import { createPaddleStream, renderPaddle } from './paddle'
@@ -44,7 +45,7 @@ const initialBall: Ball = {
 
 const ticks$ = interval(TICK_INTERVAL, animationFrameScheduler)
 const paddle$ = createPaddleStream(initialPaddle, canvas)
-const ball$ = createBallStream(initialBall, canvas)
+const ball$ = createBallSubject(initialBall, canvas)
 const bricks$ = createBricksSubject(canvas)
 const lives$ = createLivesSubject(3)
 const score$ = createScoreSubject(0)
@@ -66,6 +67,11 @@ combineLatest({ paddle: paddle$, ball: ball$, ticks: ticks$, bricks: bricks$ })
       }
 
       canvas.classList.add('hide-cursor')
+
+      if (hasBallPassedPaddle(ball.y, paddle)) {
+        ball$.next(initialBall)
+        return
+      }
 
       const brickCollision = getBrickCollision(ball, bricks)
       if (brickCollision) {
