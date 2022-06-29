@@ -1,4 +1,5 @@
-import { assert } from './shared'
+import { filter, map, of, reduce } from "rxjs";
+import { assert } from "./shared";
 
 // 1. Create an observable that emits the values 1, 2 and 3 (and then completes)
 // 2. Use the right operators to
@@ -6,6 +7,10 @@ import { assert } from './shared'
 //    2b. only let values > 5 pass and finally
 //    2c. sum those values
 
-const answer$ = null // replace null with your answer
+const answer$ = of(1, 2, 3).pipe(
+  map((n) => n * 3),
+  filter((n) => n > 5),
+  reduce((acc, n) => acc + n, 0)
+);
 
-assert(answer$, '(a|)', { a: 15 })
+assert(answer$, "(a|)", { a: 15 });
