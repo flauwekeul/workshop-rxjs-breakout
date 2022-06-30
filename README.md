@@ -55,7 +55,7 @@ With the dev server running, go to [http://localhost:8080/finished/](http://loca
 
 ### Step 3: Detach the ball on click
 
-1. Change `createBallStream()` so that it starts listening to *a single* mouse *click event*, that's *map*ped to a ball object with a speed set to `BALL_INITIAL_SPEED`.
+1. Change `createBallStream()` so that it starts listening to mouse *click events*, that are *map*ped to a ball object with a speed set to `BALL_INITIAL_SPEED`.
 2. Notice that nothing is rendered until a click event happens. How come? Fix it.
 3. If the ball's speed > 0 (after a click), it should leave the paddle and move up. Check the ball's speed in index.ts before its position is updated. If speed > 0 use the `nextBallPosition()` util to update the ball's position, else: use the `centerTopOfPaddle()` util as you already did.
 4. Notice that the ball now only moves when the mouse moves. Why is this? Try to figure this out before moving on.
@@ -69,7 +69,7 @@ With the dev server running, go to [http://localhost:8080/finished/](http://loca
 1. When the ball's speed > 0 and it's touching or passed the "ceiling" (top of screen), the ball's upward motion should become a downward motion. Use the `hasBallTouchedTop()` util and when it returns `true`, this code flips the ball's vertical motion: `ball.direction = ball.direction * -1 + 180`. Would it better to do this before or after the ball's position is updated?
 2. Similarly, when the ball touches or passes the sides of the screen, its horizontal motion should be "flipped". Use the `hasBallTouchedSide()` util and simply invert the ball's direction to make it bounce off the walls (`ball.direction *= -1`).
 3. Then the ball needs to bounce off the paddle when it hits. Flip the ball's vertical motion when the `hasBallTouchedPaddle()` returns `true`.
-4. If may want to refactor your code in index.ts now. E.g.: move the rendering of entities to a separate function and rearrange your conditionals to reduce nesting.
+4. You may want to refactor your code in index.ts now. E.g.: move the rendering of entities to a separate function and rearrange your conditionals to reduce nesting.
 5. *Optional*: give the player more control over the ball by changing its direction depending on where the ball hits the paddle. If the ball hits near the left of right edge of the paddle, it should go West or East. If the ball hits the center of the paddle, it should go North. For this *linear interpolation* is needed and there's a util called `lerp()` for that. First pass it the boundaries (use `FAR_LEFT_BOUNCE_DIRECTION` and `FAR_RIGHT_BOUNCE_DIRECTION`), that returns a function that needs a value between `0` and `1` and will return the new ball direction. The value between `0` and `1` is the *normalized* x position where the ball hits the paddle (because that determines the new direction). To get this normalized value use `(ball.x - paddle.x) / PADDLE_WIDTH`.
 
 ### Step 5: Add blocks
@@ -87,7 +87,7 @@ Now may be a good time to learn about Subjects!
    * `brickIndex`: the index of the collided brick
    * `hasCollidedVertically`: whether the collision took place on the vertical sides of a brick. If this is `false`, the collision was on the top or bottom of a brick. The ball needs to change direction differently depending on this value.
 2. When the ball hits a brick, change the ball's direction similar to when the ball hits the left or right screen sides or when the ball hits the top of the screen. Also increase the ball's speed by multiplying it with `BALL_SPEED_INCREASE`.
-3. When the ball hits a brick, the brick should be removed. First rename `createBricksStream()` to `createBricksSubject()` and make it return a Subject (what kind?) instead of an observable. A new array of bricks (with the collided brick removed) can now be send to `bricks$`.
+3. When the ball hits a brick, the brick should be removed. First rename `createBricksStream()` to `createBricksSubject()` and make it return a BehaviorSubject instead of an observable. A new array of bricks (with the collided brick removed) can now be send to `bricks$`.
 
 ### Step 7: Miss the paddle, reset the ball
 
@@ -99,13 +99,13 @@ Now may be a good time to learn about Subjects!
 
 ### Step 8: Keeping score
 
-1. Change `createScoreSubject()` in score.ts so that it simply returns a Subject (what kind?) with the score that's passed to it.
+1. Change `createScoreSubject()` in score.ts so that it simply returns a BehaviorSubject with the score that's passed to it.
 2. Change `renderScore()` in score.ts to show the score on screen. Use the `drawText()` util (and optionally `formatNumber()` to format the score). Call `renderScore()` in index.ts.
 3. Make sure to update the score by adding `BRICK_SCORE` when a brick is "popped".
 
 ### Step 9: Add lives and game over
 
-1. Change `createLivesSubject()` in lives.ts so that it simply returns a Subject (what kind?) with the amount of lives that's passed to it.
+1. Change `createLivesSubject()` in lives.ts so that it simply returns a BehaviorSubject with the amount of lives that's passed to it.
 2. Change `renderLives()` in lives.ts to show the amount of lives on screen. Use the `drawText()` util. Call `renderLives()` in index.ts.
 3. In index.ts, when the ball passes the paddle, use the `lives$` Subject to update the amount of lives.
 4. The ball is now always reset, even if there aren't any lives left. Fix this.
