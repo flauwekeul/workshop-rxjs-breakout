@@ -1,4 +1,4 @@
-import { animationFrameScheduler, combineLatest, interval, sampleTime, takeWhile, tap } from 'rxjs'
+import { animationFrameScheduler, interval, takeWhile, tap, withLatestFrom } from 'rxjs'
 import {
   BALL_INITIAL_DIRECTION,
   BALL_RADIUS,
@@ -107,10 +107,15 @@ const render = ({ paddle, ball, bricks, lives, score }: Entities): void => {
   renderScore(canvasContext, score)
 }
 
-combineLatest({ tick: ticks$, paddle: paddle$, ball: ball$, bricks: bricks$, lives: lives$, score: score$ })
+ticks$
   .pipe(
-    // make the stream emit only as fast as TICK_INTERVAL, this prevents mouse movements to make things move faster
-    sampleTime(TICK_INTERVAL, animationFrameScheduler),
+    withLatestFrom(paddle$, ball$, bricks$, lives$, score$, (_, paddle, ball, bricks, lives, score) => ({
+      paddle,
+      ball,
+      bricks,
+      lives,
+      score,
+    })),
     tap(updateEntities),
     tap(render),
     takeWhile(({ lives }) => lives > 0)

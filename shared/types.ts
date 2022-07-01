@@ -50,7 +50,6 @@ export interface Text extends Position {
 }
 
 export interface Entities {
-  tick: number
   paddle: Paddle
   ball: Ball
   bricks: Brick[]
