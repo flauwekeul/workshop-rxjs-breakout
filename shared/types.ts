@@ -27,8 +27,14 @@ export interface RenderedCircle extends Circle {
 export type Paddle = Position
 
 export interface Ball extends Circle {
-  direction: number // degrees
-  speed: number // px per tick
+  /**
+   * In degrees
+   */
+  direction: number
+  /**
+   * In pixels per tick
+   */
+  speed: number
 }
 
 export interface Brick extends Rectangle {
@@ -45,11 +51,14 @@ export interface BrickCollision {
 export interface Text extends Position {
   content: string
   color: string
-  size: number // px
+  /**
+   * In pixels
+   */
+  size: number
   textAlign: 'start' | 'end' | 'left' | 'right' | 'center'
 }
 
-export interface Entities {
+export interface GameState {
   paddle: Paddle
   ball: Ball
   bricks: Brick[]

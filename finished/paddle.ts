@@ -1,21 +1,25 @@
-import { fromEvent, map, Observable, startWith } from 'rxjs'
+import { BehaviorSubject, fromEvent, map } from 'rxjs'
 import { PADDLE_COLOR, PADDLE_HEIGHT, PADDLE_WIDTH } from '../shared/settings'
-import { Paddle, Position } from '../shared/types'
+import { Paddle } from '../shared/types'
 import { clamp, drawRectangle } from '../shared/utils'
 
-export const createPaddleStream = (paddle: Paddle, canvas: HTMLCanvasElement): Observable<Paddle> => {
-  // make sure the paddle doesn't go off screen
+export const createPaddleSubject = (paddle: Paddle, canvas: HTMLCanvasElement): BehaviorSubject<Paddle> => {
   const keepInCanvas = clamp(0, canvas.width - PADDLE_WIDTH)
-  // todo: move to updateEntities()?
-  return fromEvent<MouseEvent>(canvas, 'mousemove').pipe(
-    // center paddle to mouse x position
-    map(({ clientX }) => ({ x: keepInCanvas(clientX - PADDLE_WIDTH / 2), y: paddle.y })),
-    // start the peddle in the middle of the screen (else it only appears once the mouse moves)
-    startWith(paddle)
+  const subject = new BehaviorSubject(paddle)
+  const paddleMoves$ = fromEvent<MouseEvent>(canvas, 'mousemove').pipe(
+    map((mouseMove) => ({
+      ...subject.value,
+      // make sure the paddle doesn't go off screen
+      x: keepInCanvas(mouseMove.clientX - PADDLE_WIDTH / 2),
+    }))
   )
+
+  // make the subject observe the moving paddle events
+  paddleMoves$.subscribe(subject)
+  return subject
 }
 
-export const renderPaddle = (canvasContext: CanvasRenderingContext2D, { x, y }: Position): void => {
+export const renderPaddle = (canvasContext: CanvasRenderingContext2D, { x, y }: Paddle): void => {
   drawRectangle(canvasContext, {
     x,
     y,

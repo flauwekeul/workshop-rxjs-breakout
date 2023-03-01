@@ -98,12 +98,12 @@ export const lerp =
   (value: number) =>
     min * (1 - value) + max * value
 
-export const nextBallPosition = ({ x, y, direction, speed }: Ball): Position => {
-  const angle = ((direction - 90) / 180) * Math.PI
-  return {
-    x: x + speed * Math.cos(angle),
-    y: y + speed * Math.sin(angle),
-  }
+export const createNextBall = (ball: Ball, changes: Partial<Ball> = {}): Ball => {
+  const nextBall = { ...ball, ...changes }
+  const angle = ((nextBall.direction - 90) / 180) * Math.PI
+  nextBall.x += nextBall.speed * Math.cos(angle)
+  nextBall.y += nextBall.speed * Math.sin(angle)
+  return nextBall
 }
 
 export const hasBallTouchedSide = ({ x }: Position, screenWidth: number) =>
@@ -117,13 +117,13 @@ export const hasBallTouchedPaddle = (ball: Position, paddle: Position) => {
     // don't use >= because that makes this function return true when the ball first launches resulting in a "wiggle"
     ballBottom > paddle.y &&
     // if the ball passed the paddle bottom, consider it lost
-    !hasBallPassedPaddle(ballBottom, paddle) &&
+    !hasBallMissedPaddle(ballBottom, paddle) &&
     ball.x >= paddle.x &&
     ball.x <= paddle.x + PADDLE_WIDTH
   )
 }
 
-export const hasBallPassedPaddle = (ballY: number, paddle: Position) => ballY > paddle.y + PADDLE_HEIGHT
+export const hasBallMissedPaddle = (ballY: number, paddle: Position) => ballY > paddle.y + PADDLE_HEIGHT
 
 export const getBrickCollision = (ball: Circle, bricks: Brick[]): BrickCollision | undefined => {
   for (let i = 0; i < bricks.length; i++) {

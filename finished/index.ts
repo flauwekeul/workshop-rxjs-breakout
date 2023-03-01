@@ -1,4 +1,4 @@
-import { animationFrameScheduler, interval, takeWhile, tap, withLatestFrom } from 'rxjs'
+import { animationFrames, map, takeWhile, tap, withLatestFrom } from 'rxjs'
 import {
   BALL_INITIAL_DIRECTION,
   BALL_RADIUS,
@@ -9,29 +9,27 @@ import {
   PADDLE_BOTTOM_MARGIN,
   PADDLE_HEIGHT,
   PADDLE_WIDTH,
-  TICK_INTERVAL,
 } from '../shared/settings'
-import { Ball, Entities, Paddle } from '../shared/types'
+import { Ball, GameState, Paddle } from '../shared/types'
 import {
   centerTopOfPaddle,
   createCanvas,
+  createNextBall,
   drawGameOver,
   getBrickCollision,
-  hasBallPassedPaddle,
+  hasBallMissedPaddle,
   hasBallTouchedPaddle,
   hasBallTouchedSide,
   hasBallTouchedTop,
   lerp,
-  nextBallPosition,
 } from '../shared/utils'
 import { createBallSubject, renderBall } from './ball'
 import { createBricksSubject, renderBricks } from './bricks'
 import { createLivesSubject, renderLives } from './lives'
-import { createPaddleStream, renderPaddle } from './paddle'
+import { createPaddleSubject, renderPaddle } from './paddle'
 import { createScoreSubject, renderScore } from './score'
 
 const { canvas, canvasContext } = createCanvas()
-
 const initialPaddle: Paddle = {
   // position it in the bottom center of the canvas
   x: canvas.width / 2 - PADDLE_WIDTH / 2,
@@ -44,8 +42,7 @@ const initialBall: Ball = {
   radius: BALL_RADIUS,
 }
 
-const ticks$ = interval(TICK_INTERVAL, animationFrameScheduler)
-const paddle$ = createPaddleStream(initialPaddle, canvas)
+const paddle$ = createPaddleSubject(initialPaddle, canvas)
 const ball$ = createBallSubject(initialBall, canvas)
 const bricks$ = createBricksSubject(canvas)
 const lives$ = createLivesSubject(3)
@@ -55,48 +52,68 @@ const score$ = createScoreSubject(0)
 // FAR_LEFT_BOUNCE_DIRECTION and FAR_RIGHT_BOUNCE_DIRECTION based on this normalized value
 const paddleBounce = lerp(FAR_LEFT_BOUNCE_DIRECTION, FAR_RIGHT_BOUNCE_DIRECTION)
 
-const updateEntities = ({ paddle, ball, bricks, lives, score }: Entities): void => {
+const nextState = (state: GameState): GameState => {
+  const { paddle, ball, bricks, lives, score } = state
+
   if (ball.speed === 0) {
     canvas.classList.remove('hide-cursor')
-    const { x, y } = centerTopOfPaddle(paddle)
-    ball.x = x
-    ball.y = y
-    return
+    return { ...state, ball: createNextBall(ball, centerTopOfPaddle(paddle)) }
   }
 
   canvas.classList.add('hide-cursor')
 
-  if (hasBallPassedPaddle(ball.y, paddle)) {
-    lives$.next(--lives)
-    if (lives > 0) {
-      ball$.next(initialBall)
+  if (hasBallMissedPaddle(ball.y, paddle)) {
+    const nextLives = lives - 1
+    if (nextLives === 0) {
+      return { ...state, lives: nextLives }
     }
-    return
+    return { ...state, ball: createNextBall(initialBall, centerTopOfPaddle(paddle)), lives: nextLives }
   }
 
   const brickCollision = getBrickCollision(ball, bricks)
   if (brickCollision) {
     const { brickIndex, hasCollidedVertically } = brickCollision
-    ball.direction = ball.direction * -1 + (hasCollidedVertically ? 0 : 180)
-    ball.speed *= BALL_SPEED_INCREASE
-    const bricksWithoutCollidedBrick = bricks.filter((_, i) => i !== brickIndex)
-    bricks$.next(bricksWithoutCollidedBrick)
-    score$.next(score + BRICK_SCORE)
-  } else if (hasBallTouchedPaddle(ball, paddle)) {
-    const normalizedPaddleImpactPosition = (ball.x - paddle.x) / PADDLE_WIDTH
-    ball.direction = paddleBounce(normalizedPaddleImpactPosition)
-  } else if (hasBallTouchedSide(ball, canvas.width)) {
-    ball.direction *= -1
-  } else if (hasBallTouchedTop(ball)) {
-    ball.direction = ball.direction * -1 + 180
+    const nextBall = createNextBall(ball, {
+      direction: ball.direction * -1 + (hasCollidedVertically ? 0 : 180),
+      speed: ball.speed * BALL_SPEED_INCREASE,
+    })
+    const remainingBricks = bricks.filter((_, i) => i !== brickIndex)
+    return {
+      ...state,
+      ball: nextBall,
+      bricks: remainingBricks,
+      score: score + BRICK_SCORE,
+    }
   }
 
-  const { x, y } = nextBallPosition(ball)
-  ball.x = x
-  ball.y = y
+  if (hasBallTouchedPaddle(ball, paddle)) {
+    const normalizedPaddleImpactPosition = (ball.x - paddle.x) / PADDLE_WIDTH
+    const nextBall = createNextBall(ball, { direction: paddleBounce(normalizedPaddleImpactPosition) })
+    return { ...state, ball: nextBall }
+  }
+
+  if (hasBallTouchedSide(ball, canvas.width)) {
+    const nextBall = createNextBall(ball, { direction: ball.direction * -1 })
+    return { ...state, ball: nextBall }
+  }
+
+  if (hasBallTouchedTop(ball)) {
+    const nextBall = createNextBall(ball, { direction: ball.direction * -1 + 180 })
+    return { ...state, ball: nextBall }
+  }
+
+  return { ...state, ball: createNextBall(ball) }
 }
 
-const render = ({ paddle, ball, bricks, lives, score }: Entities): void => {
+const updateState = ({ paddle, ball, bricks, lives, score }: GameState): void => {
+  paddle$.next(paddle)
+  ball$.next(ball)
+  bricks$.next(bricks)
+  lives$.next(lives)
+  score$.next(score)
+}
+
+const renderState = ({ paddle, ball, bricks, lives, score }: GameState): void => {
   // clear previous renders
   canvasContext.clearRect(0, 0, canvas.width, canvas.height)
 
@@ -107,21 +124,26 @@ const render = ({ paddle, ball, bricks, lives, score }: Entities): void => {
   renderScore(canvasContext, score)
 }
 
-ticks$
-  .pipe(
-    withLatestFrom(paddle$, ball$, bricks$, lives$, score$, (_, paddle, ball, bricks, lives, score) => ({
-      paddle,
-      ball,
-      bricks,
-      lives,
-      score,
-    })),
-    tap(updateEntities),
-    tap(render),
-    takeWhile(({ lives }) => lives > 0)
-  )
-  .subscribe({
-    complete: () => {
-      drawGameOver(canvasContext, score$.getValue())
-    },
-  })
+const main = (): void => {
+  animationFrames()
+    .pipe(
+      withLatestFrom(paddle$, ball$, bricks$, lives$, score$, (_, paddle, ball, bricks, lives, score) => ({
+        paddle,
+        ball,
+        bricks,
+        lives,
+        score,
+      })),
+      map(nextState),
+      tap(updateState),
+      tap(renderState),
+      takeWhile(({ lives }) => lives > 0)
+    )
+    .subscribe({
+      complete: () => {
+        drawGameOver(canvasContext, score$.value)
+      },
+    })
+}
+
+main()

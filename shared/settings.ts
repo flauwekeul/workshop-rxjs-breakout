@@ -2,8 +2,6 @@
 
 import { color } from './types'
 
-export const TICK_INTERVAL = 1000 / 60 // 60 FPS
-
 export const PADDLE_BOTTOM_MARGIN = 80
 export const PADDLE_COLOR = '#737373'
 export const PADDLE_HEIGHT = 20
