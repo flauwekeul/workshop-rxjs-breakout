@@ -1,5 +1,5 @@
-import { Observable, of } from 'rxjs'
+import { of } from 'rxjs'
 
-export const createLivesSubject = (lives: number): Observable<number> => of()
+export const createLivesSubject = (lives: number) => of()
 
 export const renderLives = (canvasContext: CanvasRenderingContext2D, lives: number): void => {}
