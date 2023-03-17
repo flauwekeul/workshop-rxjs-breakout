@@ -1,4 +1,4 @@
-import { combineLatest, map, tap } from 'rxjs'
+import { animationFrames, map, tap, withLatestFrom } from 'rxjs'
 import { createBallStream, renderBall } from './ball'
 import { createBricksStream } from './bricks'
 import {
@@ -43,8 +43,17 @@ const score$ = createScoreSubject(0)
  */
 const nextState = (state: GameState): GameState => {
   const { paddle, ball } = state
-  const nextBall = createNextBall(ball, centerTopOfPaddle(paddle))
-  return { ...state, ball: nextBall }
+
+  if (ball.speed === 0) {
+    canvas.classList.remove('hide-cursor')
+    Object.assign(ball, createNextBall(ball, centerTopOfPaddle(paddle)))
+    return { ...state, ball }
+  }
+
+  canvas.classList.add('hide-cursor')
+
+  Object.assign(ball, createNextBall(ball))
+  return { ...state, ball }
 }
 
 /**
@@ -69,9 +78,10 @@ const renderState = ({ paddle, ball }: GameState): void => {
  * single stream and pipes it through the three functions above.
  */
 const main = (): void => {
-  combineLatest({ paddle: paddle$, ball: ball$ })
+  animationFrames()
     .pipe(
-      map((state) => nextState(state as GameState)),
+      withLatestFrom(paddle$, ball$, (_, paddle, ball) => ({ paddle, ball } as GameState)),
+      map(nextState),
       tap(renderState)
     )
     .subscribe()
