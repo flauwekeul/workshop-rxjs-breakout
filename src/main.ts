@@ -4,12 +4,22 @@ import { createBricksStream } from './bricks'
 import {
   BALL_INITIAL_DIRECTION,
   BALL_RADIUS,
+  FAR_LEFT_BOUNCE_DIRECTION,
+  FAR_RIGHT_BOUNCE_DIRECTION,
   PADDLE_BOTTOM_MARGIN,
   PADDLE_HEIGHT,
   PADDLE_WIDTH,
 } from './common/settings'
 import { Ball, GameState, Paddle } from './common/types'
-import { centerTopOfPaddle, createCanvas, createNextBall } from './common/utils'
+import {
+  centerTopOfPaddle,
+  createCanvas,
+  createNextBall,
+  hasBallTouchedPaddle,
+  hasBallTouchedSide,
+  hasBallTouchedTop,
+  lerp,
+} from './common/utils'
 import { createLivesSubject } from './lives'
 import { createPaddleSubject, renderPaddle } from './paddle'
 import { createScoreSubject } from './score'
@@ -38,6 +48,10 @@ const bricks$ = createBricksStream(canvas)
 const lives$ = createLivesSubject(3)
 const score$ = createScoreSubject(0)
 
+// returns a function that accepts a normalized value (between 0 and 1) that returns a direction between
+// FAR_LEFT_BOUNCE_DIRECTION and FAR_RIGHT_BOUNCE_DIRECTION based on this normalized value
+const paddleBounce = lerp(FAR_LEFT_BOUNCE_DIRECTION, FAR_RIGHT_BOUNCE_DIRECTION)
+
 /**
  * This function is responsible for creating the next game state on every tick.
  */
@@ -50,6 +64,22 @@ const nextState = (state: GameState): GameState => {
   }
 
   canvas.classList.add('hide-cursor')
+
+  if (hasBallTouchedPaddle(ball, paddle)) {
+    const normalizedPaddleImpactPosition = (ball.x - paddle.x) / PADDLE_WIDTH
+    const nextBall = createNextBall(ball, { direction: paddleBounce(normalizedPaddleImpactPosition) })
+    return { ...state, ball: nextBall }
+  }
+
+  if (hasBallTouchedSide(ball, canvas.width)) {
+    const nextBall = createNextBall(ball, { direction: ball.direction * -1 })
+    return { ...state, ball: nextBall }
+  }
+
+  if (hasBallTouchedTop(ball)) {
+    const nextBall = createNextBall(ball, { direction: ball.direction * -1 + 180 })
+    return { ...state, ball: nextBall }
+  }
 
   return { ...state, ball: createNextBall(ball) }
 }
