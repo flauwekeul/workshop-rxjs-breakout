@@ -1,6 +1,6 @@
 import { animationFrames, map, tap, withLatestFrom } from 'rxjs'
 import { createBallSubject, renderBall } from './ball'
-import { createBricksStream } from './bricks'
+import { createBricksStream, renderBricks } from './bricks'
 import {
   BALL_INITIAL_DIRECTION,
   BALL_RADIUS,
@@ -96,12 +96,13 @@ const updateState = ({ paddle, ball }: GameState): void => {
  * This function is responsible for rendering (using each entity's render
  * function).
  */
-const renderState = ({ paddle, ball }: GameState): void => {
+const renderState = ({ paddle, ball, bricks }: GameState): void => {
   // clear previous renders
   canvasContext.clearRect(0, 0, canvas.width, canvas.height)
 
   renderPaddle(canvasContext, paddle)
   renderBall(canvasContext, ball)
+  renderBricks(canvasContext, bricks)
 }
 
 /**
@@ -111,7 +112,7 @@ const renderState = ({ paddle, ball }: GameState): void => {
 const main = (): void => {
   animationFrames()
     .pipe(
-      withLatestFrom(paddle$, ball$, (_, paddle, ball) => ({ paddle, ball } as GameState)),
+      withLatestFrom(paddle$, ball$, bricks$, (_, paddle, ball, bricks) => ({ paddle, ball, bricks } as GameState)),
       map(nextState),
       tap(updateState),
       tap(renderState)
