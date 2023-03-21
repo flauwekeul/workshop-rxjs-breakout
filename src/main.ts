@@ -1,9 +1,10 @@
 import { animationFrames, map, tap, withLatestFrom } from 'rxjs'
 import { createBallSubject, renderBall } from './ball'
-import { createBricksStream, renderBricks } from './bricks'
+import { createBricksSubject, renderBricks } from './bricks'
 import {
   BALL_INITIAL_DIRECTION,
   BALL_RADIUS,
+  BALL_SPEED_INCREASE,
   FAR_LEFT_BOUNCE_DIRECTION,
   FAR_RIGHT_BOUNCE_DIRECTION,
   PADDLE_BOTTOM_MARGIN,
@@ -15,6 +16,7 @@ import {
   centerTopOfPaddle,
   createCanvas,
   createNextBall,
+  getBrickCollision,
   hasBallTouchedPaddle,
   hasBallTouchedSide,
   hasBallTouchedTop,
@@ -44,7 +46,7 @@ const initialBall: Ball = {
  */
 const paddle$ = createPaddleSubject(initialPaddle, canvas)
 const ball$ = createBallSubject(initialBall, canvas)
-const bricks$ = createBricksStream(canvas)
+const bricks$ = createBricksSubject(canvas)
 const lives$ = createLivesSubject(3)
 const score$ = createScoreSubject(0)
 
@@ -56,7 +58,7 @@ const paddleBounce = lerp(FAR_LEFT_BOUNCE_DIRECTION, FAR_RIGHT_BOUNCE_DIRECTION)
  * This function is responsible for creating the next game state on every tick.
  */
 const nextState = (state: GameState): GameState => {
-  const { paddle, ball } = state
+  const { paddle, ball, bricks } = state
 
   if (ball.speed === 0) {
     canvas.classList.remove('hide-cursor')
@@ -64,6 +66,21 @@ const nextState = (state: GameState): GameState => {
   }
 
   canvas.classList.add('hide-cursor')
+
+  const brickCollision = getBrickCollision(ball, bricks)
+  if (brickCollision) {
+    const { brickIndex, hasCollidedVertically } = brickCollision
+    const nextBall = createNextBall(ball, {
+      direction: ball.direction * -1 + (hasCollidedVertically ? 0 : 180),
+      speed: ball.speed * BALL_SPEED_INCREASE,
+    })
+    const remainingBricks = bricks.filter((_, i) => i !== brickIndex)
+    return {
+      ...state,
+      ball: nextBall,
+      bricks: remainingBricks,
+    }
+  }
 
   if (hasBallTouchedPaddle(ball, paddle)) {
     const normalizedPaddleImpactPosition = (ball.x - paddle.x) / PADDLE_WIDTH
@@ -87,9 +104,10 @@ const nextState = (state: GameState): GameState => {
 /**
  * This function can be ignored until step 4.
  */
-const updateState = ({ paddle, ball }: GameState): void => {
+const updateState = ({ paddle, ball, bricks }: GameState): void => {
   paddle$.next(paddle)
   ball$.next(ball)
+  bricks$.next(bricks)
 }
 
 /**

@@ -1,16 +1,16 @@
-import { Observable, of } from 'rxjs'
+import { BehaviorSubject } from 'rxjs'
 import { BRICKS_PER_ROW, BRICK_COLOR_MAP, BRICK_ROWS, BRICK_STROKE_COLOR } from './common/settings'
 import { Brick } from './common/types'
 import { brickBuilder, drawRectangle } from './common/utils'
 
 // create bricks row for row, starting at the bottom
-export const createBricksStream = (canvas: HTMLCanvasElement): Observable<Brick[]> => {
+export const createBricksSubject = (canvas: HTMLCanvasElement): BehaviorSubject<Brick[]> => {
   const createBrick = brickBuilder(canvas)
   const rows = Array.from({ length: BRICK_ROWS })
   const cols = Array.from({ length: BRICKS_PER_ROW })
   const bricks = rows.flatMap((_, row) => cols.map((_, col) => createBrick(col, row)))
 
-  return of(bricks)
+  return new BehaviorSubject(bricks)
 }
 
 export const renderBricks = (canvasContext: CanvasRenderingContext2D, bricks: Brick[]): void => {
