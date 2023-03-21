@@ -1,5 +1,5 @@
 import { animationFrames, map, tap, withLatestFrom } from 'rxjs'
-import { createBallStream, renderBall } from './ball'
+import { createBallSubject, renderBall } from './ball'
 import { createBricksStream } from './bricks'
 import {
   BALL_INITIAL_DIRECTION,
@@ -11,7 +11,7 @@ import {
 import { Ball, GameState, Paddle } from './common/types'
 import { centerTopOfPaddle, createCanvas, createNextBall } from './common/utils'
 import { createLivesSubject } from './lives'
-import { createPaddleStream, renderPaddle } from './paddle'
+import { createPaddleSubject, renderPaddle } from './paddle'
 import { createScoreSubject } from './score'
 
 const { canvas, canvasContext } = createCanvas()
@@ -32,8 +32,8 @@ const initialBall: Ball = {
  * Observables for all entities are created here.
  * Combine these in `main()` to get a single observable of `GameState`.
  */
-const paddle$ = createPaddleStream(initialPaddle, canvas)
-const ball$ = createBallStream(initialBall, canvas)
+const paddle$ = createPaddleSubject(initialPaddle, canvas)
+const ball$ = createBallSubject(initialBall, canvas)
 const bricks$ = createBricksStream(canvas)
 const lives$ = createLivesSubject(3)
 const score$ = createScoreSubject(0)
@@ -46,20 +46,21 @@ const nextState = (state: GameState): GameState => {
 
   if (ball.speed === 0) {
     canvas.classList.remove('hide-cursor')
-    Object.assign(ball, createNextBall(ball, centerTopOfPaddle(paddle)))
-    return { ...state, ball }
+    return { ...state, ball: createNextBall(ball, centerTopOfPaddle(paddle)) }
   }
 
   canvas.classList.add('hide-cursor')
 
-  Object.assign(ball, createNextBall(ball))
-  return { ...state, ball }
+  return { ...state, ball: createNextBall(ball) }
 }
 
 /**
  * This function can be ignored until step 4.
  */
-const updateState = (state: GameState): void => {}
+const updateState = ({ paddle, ball }: GameState): void => {
+  paddle$.next(paddle)
+  ball$.next(ball)
+}
 
 /**
  * This function is responsible for rendering (using each entity's render
@@ -82,6 +83,7 @@ const main = (): void => {
     .pipe(
       withLatestFrom(paddle$, ball$, (_, paddle, ball) => ({ paddle, ball } as GameState)),
       map(nextState),
+      tap(updateState),
       tap(renderState)
     )
     .subscribe()
