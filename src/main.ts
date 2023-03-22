@@ -1,4 +1,4 @@
-import { animationFrames, map, tap, withLatestFrom } from 'rxjs'
+import { animationFrames, map, takeWhile, tap, withLatestFrom } from 'rxjs'
 import { createBallSubject, renderBall } from './ball'
 import { createBricksSubject, renderBricks } from './bricks'
 import {
@@ -17,12 +17,13 @@ import {
   createCanvas,
   createNextBall,
   getBrickCollision,
+  hasBallMissedPaddle,
   hasBallTouchedPaddle,
   hasBallTouchedSide,
   hasBallTouchedTop,
   lerp,
 } from './common/utils'
-import { createLivesSubject } from './lives'
+import { createLivesSubject, renderLives } from './lives'
 import { createPaddleSubject, renderPaddle } from './paddle'
 import { createScoreSubject } from './score'
 
@@ -58,7 +59,7 @@ const paddleBounce = lerp(FAR_LEFT_BOUNCE_DIRECTION, FAR_RIGHT_BOUNCE_DIRECTION)
  * This function is responsible for creating the next game state on every tick.
  */
 const nextState = (state: GameState): GameState => {
-  const { paddle, ball, bricks } = state
+  const { paddle, ball, bricks, lives } = state
 
   if (ball.speed === 0) {
     canvas.classList.remove('hide-cursor')
@@ -66,6 +67,14 @@ const nextState = (state: GameState): GameState => {
   }
 
   canvas.classList.add('hide-cursor')
+
+  if (hasBallMissedPaddle(ball.y, paddle)) {
+    const nextLives = lives - 1
+    if (nextLives === 0) {
+      return { ...state, lives: nextLives }
+    }
+    return { ...state, ball: createNextBall(initialBall, centerTopOfPaddle(paddle)), lives: nextLives }
+  }
 
   const brickCollision = getBrickCollision(ball, bricks)
   if (brickCollision) {
@@ -104,23 +113,25 @@ const nextState = (state: GameState): GameState => {
 /**
  * This function can be ignored until step 4.
  */
-const updateState = ({ paddle, ball, bricks }: GameState): void => {
+const updateState = ({ paddle, ball, bricks, lives }: GameState): void => {
   paddle$.next(paddle)
   ball$.next(ball)
   bricks$.next(bricks)
+  lives$.next(lives)
 }
 
 /**
  * This function is responsible for rendering (using each entity's render
  * function).
  */
-const renderState = ({ paddle, ball, bricks }: GameState): void => {
+const renderState = ({ paddle, ball, bricks, lives }: GameState): void => {
   // clear previous renders
   canvasContext.clearRect(0, 0, canvas.width, canvas.height)
 
   renderPaddle(canvasContext, paddle)
   renderBall(canvasContext, ball)
   renderBricks(canvasContext, bricks)
+  renderLives(canvasContext, lives)
 }
 
 /**
@@ -130,10 +141,17 @@ const renderState = ({ paddle, ball, bricks }: GameState): void => {
 const main = (): void => {
   animationFrames()
     .pipe(
-      withLatestFrom(paddle$, ball$, bricks$, (_, paddle, ball, bricks) => ({ paddle, ball, bricks } as GameState)),
+      withLatestFrom(
+        paddle$,
+        ball$,
+        bricks$,
+        lives$,
+        (_, paddle, ball, bricks, lives) => ({ paddle, ball, bricks, lives } as GameState)
+      ),
       map(nextState),
       tap(updateState),
-      tap(renderState)
+      tap(renderState),
+      takeWhile(({ lives }) => lives > 0)
     )
     .subscribe()
 }
