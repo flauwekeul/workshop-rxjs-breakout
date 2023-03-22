@@ -5,6 +5,7 @@ import {
   BALL_INITIAL_DIRECTION,
   BALL_RADIUS,
   BALL_SPEED_INCREASE,
+  BRICK_SCORE,
   FAR_LEFT_BOUNCE_DIRECTION,
   FAR_RIGHT_BOUNCE_DIRECTION,
   PADDLE_BOTTOM_MARGIN,
@@ -16,6 +17,7 @@ import {
   centerTopOfPaddle,
   createCanvas,
   createNextBall,
+  drawGameOver,
   getBrickCollision,
   hasBallMissedPaddle,
   hasBallTouchedPaddle,
@@ -25,7 +27,7 @@ import {
 } from './common/utils'
 import { createLivesSubject, renderLives } from './lives'
 import { createPaddleSubject, renderPaddle } from './paddle'
-import { createScoreSubject } from './score'
+import { createScoreSubject, renderScore } from './score'
 
 const { canvas, canvasContext } = createCanvas()
 
@@ -59,7 +61,7 @@ const paddleBounce = lerp(FAR_LEFT_BOUNCE_DIRECTION, FAR_RIGHT_BOUNCE_DIRECTION)
  * This function is responsible for creating the next game state on every tick.
  */
 const nextState = (state: GameState): GameState => {
-  const { paddle, ball, bricks, lives } = state
+  const { paddle, ball, bricks, lives, score } = state
 
   if (ball.speed === 0) {
     canvas.classList.remove('hide-cursor')
@@ -88,6 +90,7 @@ const nextState = (state: GameState): GameState => {
       ...state,
       ball: nextBall,
       bricks: remainingBricks,
+      score: score + BRICK_SCORE,
     }
   }
 
@@ -113,18 +116,19 @@ const nextState = (state: GameState): GameState => {
 /**
  * This function can be ignored until step 4.
  */
-const updateState = ({ paddle, ball, bricks, lives }: GameState): void => {
+const updateState = ({ paddle, ball, bricks, lives, score }: GameState): void => {
   paddle$.next(paddle)
   ball$.next(ball)
   bricks$.next(bricks)
   lives$.next(lives)
+  score$.next(score)
 }
 
 /**
  * This function is responsible for rendering (using each entity's render
  * function).
  */
-const renderState = ({ paddle, ball, bricks, lives }: GameState): void => {
+const renderState = ({ paddle, ball, bricks, lives, score }: GameState): void => {
   // clear previous renders
   canvasContext.clearRect(0, 0, canvas.width, canvas.height)
 
@@ -132,6 +136,7 @@ const renderState = ({ paddle, ball, bricks, lives }: GameState): void => {
   renderBall(canvasContext, ball)
   renderBricks(canvasContext, bricks)
   renderLives(canvasContext, lives)
+  renderScore(canvasContext, score)
 }
 
 /**
@@ -141,19 +146,23 @@ const renderState = ({ paddle, ball, bricks, lives }: GameState): void => {
 const main = (): void => {
   animationFrames()
     .pipe(
-      withLatestFrom(
-        paddle$,
-        ball$,
-        bricks$,
-        lives$,
-        (_, paddle, ball, bricks, lives) => ({ paddle, ball, bricks, lives } as GameState)
-      ),
+      withLatestFrom(paddle$, ball$, bricks$, lives$, score$, (_, paddle, ball, bricks, lives, score) => ({
+        paddle,
+        ball,
+        bricks,
+        lives,
+        score,
+      })),
       map(nextState),
       tap(updateState),
       tap(renderState),
-      takeWhile(({ lives }) => lives > 0)
+      takeWhile(({ bricks, lives }) => lives > 0 && bricks.length > 0)
     )
-    .subscribe()
+    .subscribe({
+      complete: () => {
+        drawGameOver(canvasContext, score$.value)
+      },
+    })
 }
 
 main()
