@@ -1,4 +1,5 @@
-import { getArticlesByUserId, getCommentsByArticleId, getUser } from './shared'
+import { mergeMap } from 'rxjs'
+import { getArticlesByUserId, getCommentsByArticleId, getUser } from '../shared'
 
 /**
  * Instructions:
@@ -14,6 +15,10 @@ import { getArticlesByUserId, getCommentsByArticleId, getUser } from './shared'
  * Replace null with your answer:
  */
 
-const answer$ = null
+const answer$ = getUser().pipe(
+  mergeMap((user) => getArticlesByUserId(user.id)),
+  mergeMap((articles) => articles),
+  mergeMap((article) => getCommentsByArticleId(article.id))
+)
 
 export default answer$

@@ -6,7 +6,11 @@
   "scripts": {
     "start": "snowpack dev",
     "build": "snowpack build && slidev build --base /workshop-rxjs-breakout/slides/ --out build/slides",
-    "slides": "slidev"
+    "slides": "slidev",
+    "exercise:1": "ts-node exercises/test/01.ts",
+    "exercise:2": "ts-node exercises/test/02.ts",
+    "exercise:3": "ts-node exercises/test/03.ts",
+    "exercise:4": "ts-node exercises/test/04.ts"
   },
   "author": "Abbe Keultjes <flauwekeul@gmail.com> (https://abbekeultjes.nl/)",
   "license": "MIT",

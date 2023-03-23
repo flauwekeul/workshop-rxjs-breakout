@@ -1,3 +1,5 @@
+import { filter, map, of, reduce } from 'rxjs'
+
 /**
  * Instructions:
  *
@@ -10,6 +12,10 @@
  * Replace null with your answer:
  */
 
-const answer$ = null
+const answer$ = of(1, 2, 3).pipe(
+  map((v) => v * 3),
+  filter((v) => v > 5),
+  reduce((acc, v) => acc + v, 0)
+)
 
 export default answer$

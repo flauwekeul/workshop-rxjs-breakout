@@ -1,3 +1,5 @@
+import { merge, take, timer } from 'rxjs'
+
 /**
  * Instructions:
  *
@@ -16,6 +18,6 @@
  * Replace null with your answer:
  */
 
-const answer$ = null
+const answer$ = merge(timer(0, 10), timer(5, 10)).pipe(take(5))
 
 export default answer$

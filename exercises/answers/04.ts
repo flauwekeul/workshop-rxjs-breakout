@@ -1,5 +1,5 @@
-import { zip, of, interval, map } from 'rxjs'
-import { getArticlesByUserId, getCommentsByArticleId, getUser } from './shared'
+import { combineLatest, filter, interval, map, mergeMap, of, zip } from 'rxjs'
+import { Article, getArticlesByUserId, getCommentsByArticleId, getUser } from '../shared'
 
 /**
  * Instructions:
@@ -29,6 +29,20 @@ import { getArticlesByUserId, getCommentsByArticleId, getUser } from './shared'
 // This mimics a user clicking a button twice, each time emitting a different article id
 const articleIdClicks$ = zip(of(3, 6), interval(1000)).pipe(map(([id]) => id))
 
-const answer$ = null
+const articles$ = getUser().pipe(mergeMap((user) => getArticlesByUserId(user.id)))
+const answer$ = combineLatest([articles$, articleIdClicks$]).pipe(
+  map(([articles, articleId]) => articles.find(({ id }) => id === articleId)),
+  // Use a type predicate to convince TypeScript it's not letting through falsy values (like `undefined`).
+  // See: https://www.typescriptlang.org/docs/handbook/2/narrowing.html#using-type-predicates
+  filter((article): article is Article => !!article),
+  mergeMap((article) =>
+    getCommentsByArticleId(article.id).pipe(
+      map((comments) => ({
+        title: article.title,
+        comments,
+      }))
+    )
+  )
+)
 
 export default answer$
