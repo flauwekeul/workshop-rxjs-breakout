@@ -5,6 +5,8 @@ layout: cover
 title: RxJS fundamentals
 titleTemplate: '%s'
 favicon: https://rxjs.dev/assets/images/favicons/favicon.ico
+transition: slide-left
+css: unocss
 ---
 
 <div class="text-center">
@@ -64,7 +66,7 @@ layout: quote
 <div class="grid grid-cols-2 gap-2">
   <v-click>
 
-```js
+```js {} {maxHeight:'1'}
 
 
 Promise
@@ -79,7 +81,7 @@ Promise
 </v-click>
 <v-click>
 
-```js
+```js {} {maxHeight:'1'}
 import { of, tap } from 'rxjs'
 
 of(1)
@@ -94,7 +96,7 @@ of(1)
   </v-click>
   <v-click>
 
-```js
+```js {} {maxHeight:'1'}
 
 
 [1, 2, 3]
@@ -109,7 +111,7 @@ of(1)
   </v-click>
   <v-click>
 
-```js
+```js {} {maxHeight:'1'}
 import { from, map, filter, reduce } from 'rxjs'
 
 from([1, 2, 3])
