@@ -1,7 +1,7 @@
 name: Deploy pages
 on:
   push:
-    branches: [main]
+    branches: [step-9]
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -19,7 +19,7 @@ jobs:
       - name: Deploy pages
         uses: crazy-max/ghaction-github-pages@v3
         with:
-          build_dir: build
+          build_dir: dist
           jekyll: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

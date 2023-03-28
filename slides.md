@@ -10,7 +10,7 @@ css: unocss
 ---
 
 <div class="text-center">
-  <img src="/assets/logo-rx.svg" alt="RxJS logo" class="h-48 mx-auto mb-5" />
+  <img src="/logo-rx.svg" alt="RxJS logo" class="h-48 mx-auto mb-5" />
   <h1>RxJS fundamentals</h1>
 </div>
 

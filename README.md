@@ -1,4 +1,4 @@
-# Create [Breakout!](https://abbekeultjes.nl/workshop-rxjs-breakout/finished/) with [RxJS](https://rxjs.dev)
+# Create [Breakout!](https://abbekeultjes.nl/workshop-rxjs-breakout/) with [RxJS](https://rxjs.dev)
 
 A workshop in vanilla TypeScript.
 
@@ -16,7 +16,7 @@ npm install
 
 ## Slides
 
-Show the slides with `npm run slides` or see them [online](https://abbekeultjes.nl/workshop-rxjs-breakout/slides).
+See the slides with `npm run slides` or see them [online](https://abbekeultjes.nl/workshop-rxjs-breakout/slides).
 
 ## Exercises
 
@@ -40,7 +40,7 @@ If you can't keep up or fall in a rabbit hole deep in a plate of spaghetti code 
 
 ### Development
 
-Run `npm start` to start a dev server and visit `http://localhost:8080/` to see the fruits of your labour. You can import types, constants and utils from the `common` folder.
+Run `npm start` to start a dev server and visit `http://localhost:5173/` to see the fruits of your labour. You can import types, constants and utils from the `common` folder.
 
 ### Step 1: Render a paddle that "follows" the mouse
 

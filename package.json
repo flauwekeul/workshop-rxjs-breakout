@@ -1,23 +1,25 @@
 {
   "name": "workshop-rxjs-breakout",
-  "version": "0.0.1",
   "description": "Workshop for creating a Breakout clone in the browser with RxJS",
-  "main": "index.js",
+  "version": "0.0.0",
+  "type": "module",
   "scripts": {
-    "start": "snowpack dev",
-    "build": "snowpack build && slidev build --base /workshop-rxjs-breakout/slides/ --out build/slides",
+    "start": "vite",
+    "build": "tsc -p tsconfig.build.json && vite build --base /workshop-rxjs-breakout/ && npm run build:slides",
+    "build:slides": "slidev build --base /workshop-rxjs-breakout/slides/ --out dist/slides",
+    "preview": "vite preview",
     "slides": "slidev",
-    "exercise:1": "ts-node exercises/test/01.ts",
-    "exercise:2": "ts-node exercises/test/02.ts",
-    "exercise:3": "ts-node exercises/test/03.ts",
-    "exercise:4": "ts-node exercises/test/04.ts"
+    "exercise:1": "ts-node --esm exercises/test/01.ts",
+    "exercise:2": "ts-node --esm exercises/test/02.ts",
+    "exercise:3": "ts-node --esm exercises/test/03.ts",
+    "exercise:4": "ts-node --esm exercises/test/04.ts"
   },
   "author": "Abbe Keultjes <flauwekeul@gmail.com> (https://abbekeultjes.nl/)",
   "license": "MIT",
   "devDependencies": {
-    "snowpack": "3.8.8",
     "ts-node": "10.9.1",
-    "typescript": "5.0.2"
+    "typescript": "4.9.5",
+    "vite": "4.2.1"
   },
   "dependencies": {
     "@slidev/cli": "0.40.5",

@@ -163,7 +163,7 @@ export const brickBuilder = (canvas: HTMLCanvasElement) => {
   })
 }
 
-export const formatNumber = (score) => new Intl.NumberFormat('en-GB').format(score)
+export const formatNumber = (score: number) => new Intl.NumberFormat('en-GB').format(score)
 
 export const centerTopOfPaddle = (paddle: Paddle): Position => ({
   x: paddle.x + PADDLE_WIDTH / 2,
