@@ -137,7 +137,7 @@ const main = (): void => {
       map(nextState),
       tap(updateState),
       tap(renderState),
-      takeWhile(({ lives }) => lives > 0)
+      takeWhile(({ bricks, lives }) => lives > 0 && bricks.length > 0)
     )
     .subscribe({
       complete: () => {

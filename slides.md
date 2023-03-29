@@ -20,7 +20,7 @@ layout: quote
 
 # [Reactive Extensions](https://reactivex.io/)
 
-<div class="text-xl italic my-8 font-serif">ReactiveX is a combination of the best ideas from the <span class="text-color-[#ec0c8e]">Observer</span> pattern, the <span class="text-color-[#b7178c]">Iterator</span> pattern, and <span class="text-color-[#592d89]">functional programming</span>.</div>
+<div class="text-xl italic my-8 font-serif">ReactiveX is a combination of the best ideas from the <a href="https://codepumpkin.com/wp-content/uploads/2017/11/ObserverDesignPattern.jpg" target="_blank">Observer</a> pattern, the Iterator pattern, and functional programming.</div>
 
 <v-clicks>
 
