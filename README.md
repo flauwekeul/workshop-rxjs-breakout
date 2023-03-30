@@ -34,9 +34,9 @@ The trainer is there to help out, but there are also these resources:
 
 ## The workshop
 
-You create the game together with the trainer. He goes through all the steps below and you're encouraged to code along. If you have prior experience with RxJS you can also ignore the trainer and follow the steps on your own or with a partner.
+You're going to create the game by following the steps below. It may be more fun to team up with one or two partners, but you can go solo as well. Also, you can choose to do the workshop together with the trainer.
 
-If you can't keep up or are lost, there are branches for each step. To go to *the end of* step 2 for example, run `git checkout step-2`.
+If you can't keep up or fall in a rabbit hole deep in a plate of spaghetti code 🐇🕳️🍝, there are branches for each step. To go to *the end of* step 2 for example, run `git checkout step-2`.
 
 ### Development
 
