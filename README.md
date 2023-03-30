@@ -14,10 +14,6 @@ npm install
 2. `cd` into the folder
 3. Install dependencies
 
-## Finished game
-
-With the dev server running, go to [http://localhost:8080/finished/](http://localhost:8080/finished/) (**including the trailing slash**) to see the final result. Or see it [online](https://abbekeultjes.nl/workshop-rxjs-breakout/finished/).
-
 ## Slides
 
 Show the slides with `npm run slides` or see them [online](https://abbekeultjes.nl/workshop-rxjs-breakout/slides).
@@ -44,7 +40,7 @@ If you can't keep up or are lost, there are branches for each step. To go to *th
 
 ### Development
 
-Run `npm start` to start a dev server and visit `http://localhost:8080/` to see the fruits of your labour. You can import types, constants and utils from the `shared` folder. Take care not to import from the `finished` folder as that would make this workshop too easy 😉.
+Run `npm start` to start a dev server and visit `http://localhost:8080/` to see the fruits of your labour. You can import types, constants and utils from the `shared` folder.
 
 ### Step 1: Render a paddle that "follows" the mouse
 
