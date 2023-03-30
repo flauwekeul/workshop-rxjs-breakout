@@ -1,14 +1,14 @@
+import { createBallStream } from './ball'
+import { createBricksStream } from './bricks'
 import {
   BALL_INITIAL_DIRECTION,
   BALL_RADIUS,
   PADDLE_BOTTOM_MARGIN,
   PADDLE_HEIGHT,
   PADDLE_WIDTH,
-} from '../shared/settings'
-import { Ball, GameState, Paddle } from '../shared/types'
-import { centerTopOfPaddle, createCanvas } from '../shared/utils'
-import { createBallStream } from './ball'
-import { createBricksStream } from './bricks'
+} from './common/settings'
+import { Ball, GameState, Paddle } from './common/types'
+import { centerTopOfPaddle, createCanvas } from './common/utils'
 import { createLivesSubject } from './lives'
 import { createPaddleStream } from './paddle'
 import { createScoreSubject } from './score'

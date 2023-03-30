@@ -5,7 +5,6 @@
 module.exports = {
   mount: {
     src: '/',
-    shared: '/shared',
   },
   buildOptions: {
     // rename the default "_snowpack" metaUrlPath, else GitHub Pages ignores the folder

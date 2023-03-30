@@ -1,5 +1,5 @@
 import { Observable, of } from 'rxjs'
-import { Ball } from '../shared/types'
+import { Ball } from './common/types'
 
 export const createBallStream = (initialBall: Ball, canvas: HTMLCanvasElement): Observable<Ball> => of()
 

@@ -7,7 +7,7 @@ import {
   BRICK_ROWS,
   PADDLE_HEIGHT,
   PADDLE_WIDTH,
-} from '../shared/settings'
+} from './settings'
 import {
   Ball,
   Brick,

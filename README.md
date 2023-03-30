@@ -40,12 +40,12 @@ If you can't keep up or fall in a rabbit hole deep in a plate of spaghetti code 
 
 ### Development
 
-Run `npm start` to start a dev server and visit `http://localhost:8080/` to see the fruits of your labour. You can import types, constants and utils from the `shared` folder.
+Run `npm start` to start a dev server and visit `http://localhost:8080/` to see the fruits of your labour. You can import types, constants and utils from the `common` folder.
 
 ### Step 1: Render a paddle that "follows" the mouse
 
 1. Change `createPaddleStream()` in paddle.ts so that it returns an observable that emits the mouse's x position and the (static) paddle's y position.
-2. Change `renderPaddle()` in paddle.ts to use the `drawRectangle()` util and `PADDLE_WIDTH`, `PADDLE_HEIGHT` and `PADDLE_COLOR` settings (from shared/settings.ts).
+2. Change `renderPaddle()` in paddle.ts to use the `drawRectangle()` util and `PADDLE_WIDTH`, `PADDLE_HEIGHT` and `PADDLE_COLOR` settings (from common/settings.ts).
 3. Subscribe to `paddle$` in `main()` and make sure `renderState()` is called every time `paddle$` emits a value. Use `renderPaddle()` in `renderState()` to render the paddle on screen. You need to *persuade* TypeScript you're passing an object of type `GameState`.
 4. Use `canvasContext.clearRect(0, 0, canvas.width, canvas.height)` in `renderState()` to start with a "clean slate" on each frame (do this *before* rendering anything).
 5. Use the `clamp()` util in `renderPaddle()` to prevent the paddle to go off screen. Pass it the lower and upper bound it should *clamp* the paddle between (hint: the minimum and maximum x positions the paddle may have). It then returns a function that accepts the paddle position (hint: use the paddle's center) and it will return the paddle position clamped between the lower and upper bound.
@@ -55,7 +55,7 @@ Run `npm start` to start a dev server and visit `http://localhost:8080/` to see 
 
 1. Change `createBallStream()` in ball.ts so that it wraps the initial ball in an Observable and returns it.
 2. Subscribe to both the `paddle$` *and* the `ball$` observables in `main()`; choose a suitable [creation operator](https://rxjs.dev/guide/operators#join-creation-operators).
-3. Change `renderBall()` in ball.ts to use `drawCircle()` (from shared/utils.ts) and `BALL_COLOR` (from shared/settings.ts) to render the ball. Use `renderBall()` in `renderState()` to draw the ball on screen.
+3. Change `renderBall()` in ball.ts to use `drawCircle()` (from common/utils.ts) and `BALL_COLOR` (from common/settings.ts) to render the ball. Use `renderBall()` in `renderState()` to draw the ball on screen.
 4. In `nextState()` use the utils `createNextBall()` and `centerTopOfPaddle()` to update the ball's x position based on the paddle's x position. Use the appropriate operator in your pipeline to call `nextState()`.
 
 ### Step 3: Detach the ball on click
